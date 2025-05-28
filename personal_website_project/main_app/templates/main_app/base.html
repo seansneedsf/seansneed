@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Personal Website{% endblock title %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_head %}{% endblock extra_head %}
+</head>
+<body>
+    <header>
+        {% block header %}
+        <!-- Placeholder for site header or logo area -->
+        {% endblock header %}
+    </header>
+
+    <nav>
+        {% block navigation %}
+        <!-- Placeholder for site navigation -->
+        <ul>
+            <li><a href="{% url 'main_app:home' %}">Home</a></li>
+            <li><a href="{% url 'main_app:about' %}">About</a></li>
+            <li><a href="{% url 'main_app:services' %}">Services</a></li>
+            <li><a href="{% url 'main_app:contact' %}">Contact</a></li>
+        </ul>
+        {% endblock navigation %}
+    </nav>
+
+    <main>
+        {% block content %}
+        <!-- Page-specific content will go here -->
+        {% endblock content %}
+    </main>
+
+    <footer>
+        {% block footer %}
+        <p>&copy; {% now "Y" %} Your Name. All rights reserved.</p>
+        <!-- Placeholder for site footer -->
+        {% endblock footer %}
+    </footer>
+
+    {% block extra_scripts %}{% endblock extra_scripts %}
+</body>
+</html>

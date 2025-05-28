@@ -1,0 +1,23 @@
+{% extends "main_app/base.html" %}
+{% load static %}
+
+{% block title %}Home - {{ block.super }}{% endblock title %}
+
+{% block content %}
+<section class="hero-section" style="padding: 40px 20px; text-align: center; background-color: var(--color-background-alt);">
+    <h1>Welcome! I'm [Your Name]</h1>
+    <p style="font-size: 1.2em; color: var(--color-text-secondary);">
+        A creative [Your Profession/Title, e.g., Business Consultant & Design Enthusiast] with a passion for technology and innovative solutions.
+    </p>
+    <p style="margin-top: 30px;">
+        <a href="{% url 'main_app:contact' %}" class="btn">Let's Connect</a>
+        <a href="{% url 'main_app:services' %}" class="btn btn-outline" style="margin-left: 10px;">My Services</a>
+    </p>
+</section>
+
+<section class="main-content" style="padding: 20px;">
+    <h2>About This Site</h2>
+    <p>This is the starting point for my new personal and professional website. More content and personality coming soon!</p>
+    <!-- More content will be added here -->
+</section>
+{% endblock content %}

@@ -128,3 +128,25 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Python / Django specific ignores
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+media/
+staticfiles/
+.env
+venv/
+.venv/
+env/
+ENV/
+*.DS_Store
+personal_website_project/db.sqlite3
+personal_website_project/staticfiles/
+personal_website_project/media/
+# If there's a top-level media or staticfiles directory for the whole project (not app-specific)
+# /media/
+# /staticfiles/

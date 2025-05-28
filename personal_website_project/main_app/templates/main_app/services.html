@@ -1,0 +1,62 @@
+{% extends "main_app/base.html" %}
+{% load static %}
+
+{% block title %}My Services - {{ block.super }}{% endblock title %}
+
+{% block content %}
+<section class="page-header" style="padding: 20px; text-align: center; background-color: var(--color-background-alt);">
+    <h1>My Services</h1>
+</section>
+
+<section class="services-content" style="padding: 20px; max-width: 800px; margin: auto;">
+    <p style="text-align: center; font-size: 1.1em; margin-bottom: 30px;">
+        [Placeholder for an introductory paragraph about your freelance consulting offerings and approach.
+        E.g., "I offer strategic consulting services for businesses looking to innovate and grow. My approach combines creative thinking with actionable business insights..."]
+    </p>
+
+    <article class="service-item" style="margin-bottom: 30px; padding: 20px; border: 1px solid var(--color-border); border-radius: 8px;">
+        <h2>Service Area 1: [e.g., Business Strategy & Development]</h2>
+        <p>
+            [Placeholder for a description of this service. What problems do you solve? What outcomes can clients expect?
+            E.g., "Helping businesses define their market position, identify growth opportunities, and develop robust strategic plans..."]
+        </p>
+        <ul>
+            <li>[Specific offering, e.g., Market Analysis]</li>
+            <li>[Specific offering, e.g., Competitive Landscape Review]</li>
+            <li>[Specific offering, e.g., Strategic Planning Workshops]</li>
+        </ul>
+    </article>
+
+    <article class="service-item" style="margin-bottom: 30px; padding: 20px; border: 1px solid var(--color-border); border-radius: 8px;">
+        <h2>Service Area 2: [e.g., Design & Brand Consulting]</h2>
+        <p>
+            [Placeholder for a description of this service.
+            E.g., "Guiding companies in leveraging design for strategic advantage, from brand identity to user experience..."]
+        </p>
+        <ul>
+            <li>[Specific offering, e.g., Brand Identity Review]</li>
+            <li>[Specific offering, e.g., UX/UI Design Strategy]</li>
+            <li>[Specific offering, e.g., Creative Direction]</li>
+        </ul>
+    </article>
+
+    <article class="service-item" style="margin-bottom: 30px; padding: 20px; border: 1px solid var(--color-border); border-radius: 8px;">
+        <h2>Service Area 3: [e.g., Technology & Innovation Advisory]</h2>
+        <p>
+            [Placeholder for a description of this service.
+            E.g., "Providing insights on how technology can be used to enhance business processes and customer engagement..."]
+        </p>
+        <ul>
+            <li>[Specific offering, e.g., Digital Transformation Insights]</li>
+            <li>[Specific offering, e.g., Website Modernization Planning]</li>
+            <li>[Specific offering, e.g., Emerging Tech Opportunities]</li>
+        </ul>
+    </article>
+
+    <div style="text-align: center; margin-top: 40px;">
+        <p>Interested in working together?</p>
+        <a href="{% url 'main_app:contact' %}" class="btn">Get in Touch</a>
+    </div>
+
+</section>
+{% endblock content %}

@@ -1,0 +1,29 @@
+{% extends "main_app/base.html" %}
+{% load static %}
+
+{% block title %}Contact Me - {{ block.super }}{% endblock title %}
+
+{% block content %}
+<section class="page-header" style="padding: 20px; text-align: center; background-color: var(--color-background-alt);">
+    <h1>Contact Me</h1>
+</section>
+
+<section class="contact-content" style="padding: 20px; max-width: 600px; margin: auto;">
+    {% if message_sent %}
+        <div class="alert alert-success" style="padding: 15px; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 5px; margin-bottom: 20px;">
+            Thank you for your message! I'll get back to you soon.
+        </div>
+    {% else %}
+        <p style="text-align: center; margin-bottom: 20px;">
+            Have a question, project idea, or just want to connect? Fill out the form below.
+        </p>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div style="text-align: right; margin-top: 20px;">
+                <button type="submit" class="btn">Send Message</button>
+            </div>
+        </form>
+    {% endif %}
+</section>
+{% endblock content %}

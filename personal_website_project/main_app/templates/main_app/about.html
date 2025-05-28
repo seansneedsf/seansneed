@@ -1,0 +1,62 @@
+{% extends "main_app/base.html" %}
+{% load static %}
+
+{% block title %}About Me - {{ block.super }}{% endblock title %}
+
+{% block content %}
+<section class="page-header" style="padding: 20px; text-align: center; background-color: var(--color-background-alt);">
+    <h1>About Me</h1>
+</section>
+
+<section class="about-content" style="padding: 20px; max-width: 800px; margin: auto;">
+    <article>
+        <h2>My Story</h2>
+        <p>
+            [Placeholder for a brief introduction about yourself, your journey, and what drives you.
+            E.g., "I'm a design strategist and business consultant with a deep-rooted passion for technology and creativity,
+            tracing back to the early days of the web. My journey began at the Academy of Art University in San Francisco..."]
+        </p>
+    </article>
+
+    <article>
+        <h2>Experience</h2>
+        <p>
+            [Placeholder for your professional experience. You can list roles here.
+            Consider a format for each role: Job Title at Company (Dates) - Brief description of responsibilities and achievements.
+            E.g., "Business Consultant at Nike (Year - Year) - Focused on X, Y, and Z, achieving A and B."]
+        </p>
+        <ul>
+            <li><strong>[Job Title] at [Company]</strong> (Year - Year)
+                <ul>
+                    <li>[Key achievement or responsibility]</li>
+                    <li>[Another key achievement or responsibility]</li>
+                </ul>
+            </li>
+            <li><strong>[Previous Job Title] at [Previous Company]</strong> (Year - Year)
+                <ul>
+                    <li>[Key achievement or responsibility]</li>
+                </ul>
+            </li>
+            <!-- Add more roles as needed -->
+        </ul>
+        <p>For more details, please visit my <a href="https://www.linkedin.com/in/seansneed" target="_blank" rel="noopener noreferrer">LinkedIn profile</a>.</p>
+    </article>
+
+    <article>
+        <h2>Skills & Philosophy</h2>
+        <p>
+            [Placeholder for your skills, areas of expertise, and your working philosophy.
+            E.g., "I specialize in design strategy, user experience, and bridging the gap between creative vision and business objectives.
+            I believe in a collaborative approach..."]
+        </p>
+        <ul>
+            <li>Design Strategy</li>
+            <li>Business Consulting</li>
+            <li>User Experience (UX)</li>
+            <li>Web Design & Development</li>
+            <li>[Add other relevant skills]</li>
+        </ul>
+    </article>
+
+</section>
+{% endblock content %}
