@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth antialiased">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Posts Admin - Sean Sneed</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100;200;300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        .font-geist {
+            font-family: 'Geist', sans-serif;
+        }
+        .font-inter {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-neutral-900 text-white font-inter min-h-screen">
+    <!-- Login Screen -->
+    <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-neutral-800 rounded-lg border border-neutral-700 p-8 w-full max-w-md">
+            <div class="text-center mb-8">
+                <img src="/images/skater-logo.svg" alt="Sean Sneed" class="h-8 w-8 mx-auto mb-4">
+                <h1 class="text-2xl font-geist font-light text-white mb-2">Social Posts Admin</h1>
+                <p class="text-neutral-400 text-sm">Enter password to manage social posts</p>
+            </div>
+            
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="password" class="block text-sm font-medium text-neutral-300 mb-2">Password</label>
+                    <input type="password" id="password" class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter admin password" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors">
+                    Login
+                </button>
+            </form>
+            
+            <div id="login-error" class="mt-4 text-red-400 text-sm text-center hidden">
+                Incorrect password. Please try again.
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="admin-panel" class="hidden min-h-screen">
+        <!-- Header -->
+        <header class="bg-neutral-800 border-b border-neutral-700 p-4">
+            <div class="max-w-6xl mx-auto flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <img src="/images/skater-logo.svg" alt="Sean Sneed" class="h-6 w-6">
+                    <h1 class="text-xl font-geist font-light">Social Posts Admin</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="social.html" target="_blank" class="text-neutral-400 hover:text-white transition-colors text-sm">
+                        View Social Page
+                    </a>
+                    <button id="logout-btn" class="text-neutral-400 hover:text-white transition-colors text-sm">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-4xl mx-auto p-6">
+            <!-- Add New Post Form -->
+            <div class="bg-neutral-800 rounded-lg border border-neutral-700 p-6 mb-8">
+                <h2 class="text-lg font-geist font-light mb-6">Add New Social Post</h2>
+                
+                <form id="post-form" class="space-y-6">
+                    <!-- Post Type Selection -->
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-300 mb-3">Post Type</label>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            <label class="relative">
+                                <input type="radio" name="postType" value="bluesky" class="sr-only peer" checked>
+                                <div class="p-4 bg-neutral-700 border border-neutral-600 rounded-lg cursor-pointer peer-checked:border-blue-500 peer-checked:bg-blue-500/10 transition-all">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <img src="/images/icons/w_twitter_icon.svg" alt="Bluesky" class="w-5 h-5">
+                                        <span class="font-medium text-sm">Bluesky</span>
+                                    </div>
+                                    <p class="text-xs text-neutral-400">Quick thoughts & updates</p>
+                                </div>
+                            </label>
+                            
+                            <label class="relative">
+                                <input type="radio" name="postType" value="instagram" class="sr-only peer">
+                                <div class="p-4 bg-neutral-700 border border-neutral-600 rounded-lg cursor-pointer peer-checked:border-pink-500 peer-checked:bg-pink-500/10 transition-all">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <img src="/images/icons/w_instagram_icon.svg" alt="Instagram" class="w-5 h-5">
+                                        <span class="font-medium text-sm">Instagram</span>
+                                    </div>
+                                    <p class="text-xs text-neutral-400">Visual content & lifestyle</p>
+                                </div>
+                            </label>
+                            
+                            <label class="relative">
+                                <input type="radio" name="postType" value="linkedin" class="sr-only peer">
+                                <div class="p-4 bg-neutral-700 border border-neutral-600 rounded-lg cursor-pointer peer-checked:border-blue-600 peer-checked:bg-blue-600/10 transition-all">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <img src="/images/icons/w_linkedin_icon.svg" alt="LinkedIn" class="w-5 h-5">
+                                        <span class="font-medium text-sm">LinkedIn</span>
+                                    </div>
+                                    <p class="text-xs text-neutral-400">Professional insights</p>
+                                </div>
+                            </label>
+                            
+                            <label class="relative">
+                                <input type="radio" name="postType" value="journal" class="sr-only peer">
+                                <div class="p-4 bg-neutral-700 border border-neutral-600 rounded-lg cursor-pointer peer-checked:border-neutral-400 peer-checked:bg-neutral-600/50 transition-all">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <img src="/images/icons/book_open_icon.svg" alt="Journal" class="w-5 h-5">
+                                        <span class="font-medium text-sm">Journal</span>
+                                    </div>
+                                    <p class="text-xs text-neutral-400">Personal reflections</p>
+                                </div>
+                            </label>
+                            
+                            <label class="relative">
+                                <input type="radio" name="postType" value="apple_music" class="sr-only peer">
+                                <div class="p-4 bg-neutral-700 border border-neutral-600 rounded-lg cursor-pointer peer-checked:border-pink-500 peer-checked:bg-pink-500/10 transition-all">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <img src="/images/icons/apple_icon.svg" alt="Apple Music" class="w-5 h-5">
+                                        <span class="font-medium text-sm">Apple Music</span>
+                                    </div>
+                                    <p class="text-xs text-neutral-400">Music sharing</p>
+                                </div>
+                            </label>
+                            
+                            <label class="relative">
+                                <input type="radio" name="postType" value="spotify" class="sr-only peer">
+                                <div class="p-4 bg-neutral-700 border border-neutral-600 rounded-lg cursor-pointer peer-checked:border-green-500 peer-checked:bg-green-500/10 transition-all">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <img src="/images/icons/spotify_icon.svg" alt="Spotify" class="w-5 h-5">
+                                        <span class="font-medium text-sm">Spotify</span>
+                                    </div>
+                                    <p class="text-xs text-neutral-400">Music discovery</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div>
+                        <label for="content" class="block text-sm font-medium text-neutral-300 mb-2">Content</label>
+                        <textarea id="content" rows="4" class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical" placeholder="What's on your mind?" required></textarea>
+                    </div>
+
+                    <!-- Music Fields (hidden by default) -->
+                    <div id="music-fields" class="hidden space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="songTitle" class="block text-sm font-medium text-neutral-300 mb-2">Song Title</label>
+                                <input type="text" id="songTitle" class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Song name">
+                            </div>
+                            <div>
+                                <label for="artist" class="block text-sm font-medium text-neutral-300 mb-2">Artist</label>
+                                <input type="text" id="artist" class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Artist name">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="album" class="block text-sm font-medium text-neutral-300 mb-2">Album</label>
+                                <input type="text" id="album" class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Album name">
+                            </div>
+                            <div>
+                                <label for="duration" class="block text-sm font-medium text-neutral-300 mb-2">Duration</label>
+                                <input type="text" id="duration" class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="3:45">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Journal Fields (hidden by default) -->
+                    <div id="journal-fields" class="hidden space-y-4">
+                        <div>
+                            <label for="tags" class="block text-sm font-medium text-neutral-300 mb-2">Tags (comma separated)</label>
+                            <input type="text" id="tags" class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Design, Reflection, Tools">
+                        </div>
+                        <div>
+                            <label for="readTime" class="block text-sm font-medium text-neutral-300 mb-2">Read Time</label>
+                            <input type="text" id="readTime" class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="2 min read">
+                        </div>
+                    </div>
+
+                    <!-- Image Upload -->
+                    <div>
+                        <label for="image" class="block text-sm font-medium text-neutral-300 mb-2">Image (optional)</label>
+                        <input type="file" id="image" accept="image/*" class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:text-sm file:bg-neutral-600 file:text-white hover:file:bg-neutral-500">
+                    </div>
+
+                    <!-- Album Art Upload (for music posts) -->
+                    <div id="album-art-field" class="hidden">
+                        <label for="albumArt" class="block text-sm font-medium text-neutral-300 mb-2">Album Art (optional)</label>
+                        <input type="file" id="albumArt" accept="image/*" class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:text-sm file:bg-neutral-600 file:text-white hover:file:bg-neutral-500">
+                    </div>
+
+                    <!-- Social Metrics -->
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-300 mb-3">Social Metrics (optional)</label>
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                            <div>
+                                <label for="likes" class="block text-xs text-neutral-400 mb-1">Likes</label>
+                                <input type="number" id="likes" min="0" class="w-full px-2 py-1 bg-neutral-700 border border-neutral-600 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            </div>
+                            <div id="reposts-field" class="hidden">
+                                <label for="reposts" class="block text-xs text-neutral-400 mb-1">Reposts</label>
+                                <input type="number" id="reposts" min="0" class="w-full px-2 py-1 bg-neutral-700 border border-neutral-600 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            </div>
+                            <div id="replies-field" class="hidden">
+                                <label for="replies" class="block text-xs text-neutral-400 mb-1">Replies</label>
+                                <input type="number" id="replies" min="0" class="w-full px-2 py-1 bg-neutral-700 border border-neutral-600 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            </div>
+                            <div id="comments-field" class="hidden">
+                                <label for="comments" class="block text-xs text-neutral-400 mb-1">Comments</label>
+                                <input type="number" id="comments" min="0" class="w-full px-2 py-1 bg-neutral-700 border border-neutral-600 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            </div>
+                            <div id="shares-field" class="hidden">
+                                <label for="shares" class="block text-xs text-neutral-400 mb-1">Shares</label>
+                                <input type="number" id="shares" min="0" class="w-full px-2 py-1 bg-neutral-700 border border-neutral-600 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            </div>
+                        </div>
+                        <p class="text-xs text-neutral-500 mt-2">Leave blank for auto-generated values</p>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition-colors">
+                        Publish Post
+                    </button>
+                </form>
+            </div>
+
+            <!-- Recent Posts -->
+            <div class="bg-neutral-800 rounded-lg border border-neutral-700 p-6">
+                <h2 class="text-lg font-geist font-light mb-6">Recent Posts</h2>
+                <div id="recent-posts" class="space-y-4">
+                    <!-- Posts will be loaded here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Simple password protection
+        const ADMIN_PASSWORD = 'seansneed2025'; // Change this to your desired password
+        
+        // Initialize Supabase
+        const SUPABASE_URL = 'https://oujxbqzbgdsavuavkrep.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91anhicXpiZ2RzYXZ1YXZrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTg1NzAsImV4cCI6MjA2NjUzNDU3MH0.Sc7S82P08g6aKOfsuDzn9XmDoqfKyUZmoXj7p1_4MfM';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // DOM elements
+        const loginScreen = document.getElementById('login-screen');
+        const adminPanel = document.getElementById('admin-panel');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const logoutBtn = document.getElementById('logout-btn');
+        const postForm = document.getElementById('post-form');
+        const musicFields = document.getElementById('music-fields');
+        const journalFields = document.getElementById('journal-fields');
+
+        // Check if already logged in
+        if (localStorage.getItem('socialAdminLoggedIn') === 'true') {
+            showAdminPanel();
+        }
+
+        // Login form handler
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            
+            if (password === ADMIN_PASSWORD) {
+                localStorage.setItem('socialAdminLoggedIn', 'true');
+                showAdminPanel();
+            } else {
+                loginError.classList.remove('hidden');
+                document.getElementById('password').value = '';
+            }
+        });
+
+        // Logout handler
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('socialAdminLoggedIn');
+            showLoginScreen();
+        });
+
+        // Post type change handler
+        document.querySelectorAll('input[name="postType"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const type = e.target.value;
+                
+                // Hide all conditional fields
+                musicFields.classList.add('hidden');
+                journalFields.classList.add('hidden');
+                document.getElementById('album-art-field').classList.add('hidden');
+                
+                // Hide all metric fields first
+                document.getElementById('reposts-field').classList.add('hidden');
+                document.getElementById('replies-field').classList.add('hidden');
+                document.getElementById('comments-field').classList.add('hidden');
+                document.getElementById('shares-field').classList.add('hidden');
+                
+                // Show relevant fields based on platform
+                if (type === 'apple_music' || type === 'spotify') {
+                    musicFields.classList.remove('hidden');
+                    document.getElementById('album-art-field').classList.remove('hidden');
+                } else if (type === 'journal') {
+                    journalFields.classList.remove('hidden');
+                } else if (type === 'bluesky') {
+                    document.getElementById('reposts-field').classList.remove('hidden');
+                    document.getElementById('replies-field').classList.remove('hidden');
+                } else if (type === 'instagram') {
+                    document.getElementById('comments-field').classList.remove('hidden');
+                } else if (type === 'linkedin') {
+                    document.getElementById('comments-field').classList.remove('hidden');
+                    document.getElementById('shares-field').classList.remove('hidden');
+                }
+            });
+        });
+
+        // Global variables for edit mode
+        let editingPostId = null;
+        let originalButtonText = 'Publish Post';
+
+        // Edit post function
+        async function editPost(postId) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('social_posts')
+                    .select('*')
+                    .eq('id', postId)
+                    .single();
+
+                if (error) throw error;
+
+                // Populate form with existing data
+                document.querySelector(`input[name="postType"][value="${data.platform}"]`).checked = true;
+                document.getElementById('content').value = data.content;
+                
+                // Show appropriate fields based on post type
+                const event = { target: { value: data.platform } };
+                document.querySelectorAll('input[name="postType"]').forEach(radio => {
+                    if (radio.value === data.platform) {
+                        radio.dispatchEvent(new Event('change'));
+                    }
+                });
+
+                // Fill platform-specific fields
+                if (data.platform === 'apple_music' || data.platform === 'spotify') {
+                    document.getElementById('songTitle').value = data.song_title || '';
+                    document.getElementById('artist').value = data.artist || '';
+                    document.getElementById('album').value = data.album || '';
+                    document.getElementById('duration').value = data.duration || '';
+                } else if (data.platform === 'journal') {
+                    document.getElementById('tags').value = data.tags ? data.tags.join(', ') : '';
+                    document.getElementById('readTime').value = data.read_time || '';
+                }
+
+                // Fill social metrics
+                document.getElementById('likes').value = data.likes || '';
+                if (data.reposts) document.getElementById('reposts').value = data.reposts;
+                if (data.replies) document.getElementById('replies').value = data.replies;
+                if (data.comments) document.getElementById('comments').value = data.comments;
+                if (data.shares) document.getElementById('shares').value = data.shares;
+
+                // Update UI for edit mode
+                editingPostId = postId;
+                const submitBtn = document.querySelector('#post-form button[type="submit"]');
+                originalButtonText = submitBtn.textContent;
+                submitBtn.textContent = 'Update Post';
+                submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                submitBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+
+                // Show cancel button
+                showCancelButton();
+
+                // Scroll to form
+                document.querySelector('#post-form').scrollIntoView({ behavior: 'smooth' });
+
+            } catch (error) {
+                console.error('Error loading post for edit:', error);
+                alert('Error loading post: ' + error.message);
+            }
+        }
+
+        function showCancelButton() {
+            let cancelBtn = document.getElementById('cancel-edit-btn');
+            if (!cancelBtn) {
+                cancelBtn = document.createElement('button');
+                cancelBtn.id = 'cancel-edit-btn';
+                cancelBtn.type = 'button';
+                cancelBtn.className = 'bg-neutral-600 hover:bg-neutral-700 text-white font-medium py-3 px-4 rounded-md transition-colors ml-2';
+                cancelBtn.textContent = 'Cancel Edit';
+                cancelBtn.onclick = cancelEdit;
+                document.querySelector('#post-form button[type="submit"]').parentNode.appendChild(cancelBtn);
+            }
+            cancelBtn.style.display = 'inline-block';
+        }
+
+        function cancelEdit() {
+            editingPostId = null;
+            const submitBtn = document.querySelector('#post-form button[type="submit"]');
+            submitBtn.textContent = originalButtonText;
+            submitBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+            submitBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            
+            document.getElementById('cancel-edit-btn').style.display = 'none';
+            document.getElementById('post-form').reset();
+            
+            // Hide conditional fields
+            musicFields.classList.add('hidden');
+            journalFields.classList.add('hidden');
+            document.getElementById('album-art-field').classList.add('hidden');
+        }
+
+        // Post form handler
+        postForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Show loading state
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            try {
+                const formData = new FormData(e.target);
+                const postType = formData.get('postType');
+                const content = formData.get('content') || document.getElementById('content').value;
+                
+                submitBtn.textContent = 'Publishing...';
+                submitBtn.disabled = true;
+                
+                // Create post object for Supabase
+                const post = {
+                    platform: postType,
+                    content: content,
+                    author: 'Sean Sneed',
+                    post_type: getPostTypeCategory(postType),
+                    likes: parseInt(document.getElementById('likes').value) || Math.floor(Math.random() * 50) + 10
+                };
+
+                // Add platform-specific data
+                await addPlatformSpecificData(post, postType);
+
+                // Handle main image upload to Supabase Storage
+                const imageFile = document.getElementById('image').files[0];
+                if (imageFile) {
+                    console.log('Uploading main image:', imageFile.name);
+                    const imageUrl = await uploadToSupabaseStorage(imageFile, 'images');
+                    if (imageUrl) {
+                        console.log('Main image uploaded successfully:', imageUrl);
+                        post.image = imageUrl;
+                        if (post.post_type === 'text') {
+                            post.post_type = 'image';
+                        }
+                    } else {
+                        console.error('Main image upload failed');
+                    }
+                }
+
+                // Handle album art upload for music posts
+                const albumArtFile = document.getElementById('albumArt').files[0];
+                if (albumArtFile && (postType === 'apple_music' || postType === 'spotify')) {
+                    console.log('Uploading album art:', albumArtFile.name);
+                    const albumArtUrl = await uploadToSupabaseStorage(albumArtFile, 'images');
+                    if (albumArtUrl) {
+                        console.log('Album art uploaded successfully:', albumArtUrl);
+                        post.albumArt = albumArtUrl;  // Use camelCase to match expected format
+                    } else {
+                        console.error('Album art upload failed');
+                    }
+                }
+
+                // Save to Supabase
+                if (editingPostId) {
+                    // Update existing post - transform data to match database schema
+                    const dbUpdateData = {
+                        platform: post.platform,
+                        platform_name: post.platform_name,
+                        platform_icon: post.platform_icon,
+                        platform_color: post.platform_color,
+                        platform_text_color: post.platform_text_color,
+                        author: post.author,
+                        handle: post.handle,
+                        content: post.content,
+                        post_type: post.post_type,
+                        likes: post.likes || 0,
+                        reposts: post.reposts || 0,
+                        replies: post.replies || 0,
+                        comments: post.comments || 0,
+                        shares: post.shares || 0,
+                        image: post.image,
+                        album_art: post.albumArt,  // Convert camelCase to snake_case
+                        song_title: post.song_title,
+                        artist: post.artist,
+                        album: post.album,
+                        duration: post.duration,
+                        tags: post.tags || [],
+                        read_time: post.read_time
+                    };
+                    
+                    console.log('🔄 Updating post with data:', dbUpdateData);
+                    
+                    const { error } = await supabaseClient
+                        .from('social_posts')
+                        .update(dbUpdateData)
+                        .eq('id', editingPostId);
+                    
+                    if (error) throw error;
+                    alert('Post updated successfully!');
+                    cancelEdit();
+                } else {
+                    // Create new post
+                    await savePostToSupabase(post);
+                    alert('Post published successfully!');
+                    
+                    // Reset form
+                    postForm.reset();
+                    musicFields.classList.add('hidden');
+                    journalFields.classList.add('hidden');
+                    document.getElementById('album-art-field').classList.add('hidden');
+                }
+                
+                // Reload recent posts
+                await loadRecentPosts();
+                
+            } catch (error) {
+                console.error('Error publishing post:', error);
+                alert('Error publishing post: ' + error.message);
+            } finally {
+                // Reset button state
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Upload file to Supabase Storage
+        async function uploadToSupabaseStorage(file, bucket) {
+            try {
+                console.log(`🔄 Uploading file ${file.name} to bucket ${bucket}`);
+                const fileName = `${Date.now()}-${file.name}`;
+                
+                const { data, error } = await supabaseClient.storage
+                    .from(bucket)
+                    .upload(fileName, file);
+
+                if (error) {
+                    console.error('❌ Storage upload error:', error);
+                    throw error;
+                }
+
+                console.log('✅ File uploaded successfully:', data);
+
+                // Get public URL
+                const { data: urlData } = supabaseClient.storage
+                    .from(bucket)
+                    .getPublicUrl(fileName);
+
+                console.log('🔗 Generated public URL:', urlData.publicUrl);
+                return urlData.publicUrl;
+            } catch (error) {
+                console.error('❌ Error uploading file:', error);
+                return null;
+            }
+        }
+
+        // Save post to Supabase
+        async function savePostToSupabase(postData) {
+            try {
+                console.log('📤 Saving post data to Supabase:', postData);
+                
+                // Transform data to match database schema (similar to social-posts-supabase.js)
+                const dbData = {
+                    platform: postData.platform,
+                    platform_name: postData.platform_name,
+                    platform_icon: postData.platform_icon,
+                    platform_color: postData.platform_color,
+                    platform_text_color: postData.platform_text_color,
+                    author: postData.author,
+                    handle: postData.handle,
+                    content: postData.content,
+                    post_type: postData.post_type,
+                    likes: postData.likes || 0,
+                    reposts: postData.reposts || 0,
+                    replies: postData.replies || 0,
+                    comments: postData.comments || 0,
+                    shares: postData.shares || 0,
+                    image: postData.image,
+                    album_art: postData.albumArt,  // Convert camelCase to snake_case for database
+                    song_title: postData.song_title,
+                    artist: postData.artist,
+                    album: postData.album,
+                    duration: postData.duration,
+                    tags: postData.tags || [],
+                    read_time: postData.read_time
+                };
+                
+                console.log('🔄 Transformed data for database:', dbData);
+                
+                const { data, error } = await supabaseClient
+                    .from('social_posts')
+                    .insert([dbData])
+                    .select();
+
+                if (error) {
+                    console.error('❌ Supabase insert error:', error);
+                    throw error;
+                }
+                
+                console.log('✅ Post saved to Supabase successfully:', data);
+                return data;
+            } catch (error) {
+                console.error('❌ Error saving to Supabase:', error);
+                
+                // Fallback to localStorage if Supabase fails
+                console.log('🔄 Falling back to localStorage...');
+                const posts = JSON.parse(localStorage.getItem('socialPosts') || '[]');
+                postData.id = 'post-' + Date.now();
+                postData.timestamp = 'Just now';
+                posts.unshift(postData);
+                localStorage.setItem('socialPosts', JSON.stringify(posts));
+                
+                throw new Error('Supabase unavailable, saved locally instead');
+            }
+        }
+
+        function getPostTypeCategory(platform) {
+            if (platform === 'apple_music' || platform === 'spotify') return 'music';
+            if (platform === 'journal') return 'journal';
+            return 'text';
+        }
+
+        async function addPlatformSpecificData(post, postType) {
+            const platformData = {
+                bluesky: {
+                    platform_name: 'Bluesky',
+                    platform_icon: '/images/icons/w_twitter_icon.svg',
+                    platform_color: 'bg-[rgb(0,133,255)]',
+                    platform_text_color: 'text-white',
+                    handle: '@seansneed.bsky.social',
+                    reposts: parseInt(document.getElementById('reposts').value) || Math.floor(Math.random() * 20) + 1,
+                    replies: parseInt(document.getElementById('replies').value) || Math.floor(Math.random() * 30) + 1
+                },
+                instagram: {
+                    platform_name: 'Instagram',
+                    platform_icon: '/images/icons/w_instagram_icon.svg',
+                    platform_color: 'bg-gradient-to-r from-orange-500 via-purple-500 to-pink-500',
+                    platform_text_color: 'text-white',
+                    handle: '@theseansneed',
+                    comments: parseInt(document.getElementById('comments').value) || Math.floor(Math.random() * 40) + 5
+                },
+                linkedin: {
+                    platform_name: 'LinkedIn',
+                    platform_icon: '/images/icons/w_linkedin_icon.svg',
+                    platform_color: 'bg-[rgb(10,102,194)]',
+                    platform_text_color: 'text-white',
+                    handle: 'Sean Sneed',
+                    comments: parseInt(document.getElementById('comments').value) || Math.floor(Math.random() * 25) + 3,
+                    shares: parseInt(document.getElementById('shares').value) || Math.floor(Math.random() * 15) + 1
+                },
+                journal: {
+                    platform_name: 'Journal Entry',
+                    platform_icon: '/images/icons/book_open_icon.svg',
+                    platform_color: 'bg-white',
+                    platform_text_color: 'text-neutral-900',
+                    handle: 'Personal Reflection',
+                    tags: document.getElementById('tags').value.split(',').map(t => t.trim()).filter(t => t),
+                    read_time: document.getElementById('readTime').value || '2 min read',
+                    likes: 0
+                },
+                apple_music: {
+                    platform_name: 'Apple Music',
+                    platform_icon: '/images/icons/apple_icon.svg',
+                    platform_color: 'bg-gradient-to-r from-pink-500 to-rose-500',
+                    platform_text_color: 'text-white',
+                    handle: 'Currently Playing',
+                    song_title: document.getElementById('songTitle').value,
+                    artist: document.getElementById('artist').value,
+                    album: document.getElementById('album').value,
+                    duration: document.getElementById('duration').value || '3:45'
+                },
+                spotify: {
+                    platform_name: 'Spotify',
+                    platform_icon: '/images/icons/spotify_icon.svg',
+                    platform_color: 'bg-gradient-to-r from-green-500 to-green-600',
+                    platform_text_color: 'text-white',
+                    handle: 'Recently Played',
+                    song_title: document.getElementById('songTitle').value,
+                    artist: document.getElementById('artist').value,
+                    album: document.getElementById('album').value,
+                    duration: document.getElementById('duration').value || '3:45'
+                }
+            };
+
+            Object.assign(post, platformData[postType]);
+        }
+
+        async function loadRecentPosts() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('social_posts')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+
+                if (error) throw error;
+
+                const container = document.getElementById('recent-posts');
+                
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p class="text-neutral-400 text-center py-8">No posts yet</p>';
+                    return;
+                }
+
+                container.innerHTML = data.map(post => `
+                    <div class="bg-neutral-700 rounded-lg p-4 border border-neutral-600">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                                <img src="${post.platform_icon}" alt="${post.platform_name}" class="w-4 h-4">
+                                <span class="text-sm font-medium">${post.platform_name}</span>
+                                <span class="text-xs text-neutral-400">${formatTimestamp(post.created_at)}</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="editPost(${post.id})" class="text-blue-400 hover:text-blue-300 text-xs">Edit</button>
+                                <button onclick="deletePost(${post.id})" class="text-red-400 hover:text-red-300 text-xs">Delete</button>
+                            </div>
+                        </div>
+                        <p class="text-sm text-neutral-300 line-clamp-2">${post.content}</p>
+                        ${post.song_title ? `<p class="text-xs text-neutral-400 mt-1">🎵 ${post.song_title} - ${post.artist}</p>` : ''}
+                        <div class="flex items-center gap-4 mt-2 text-xs text-neutral-500">
+                            <span>❤️ ${post.likes}</span>
+                            ${post.reposts ? `<span>🔄 ${post.reposts}</span>` : ''}
+                            ${post.replies ? `<span>💬 ${post.replies}</span>` : ''}
+                            ${post.comments ? `<span>💬 ${post.comments}</span>` : ''}
+                            ${post.shares ? `<span>📤 ${post.shares}</span>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading posts:', error);
+                // Fallback to localStorage
+                const posts = JSON.parse(localStorage.getItem('socialPosts') || '[]');
+                const container = document.getElementById('recent-posts');
+                
+                if (posts.length === 0) {
+                    container.innerHTML = '<p class="text-neutral-400 text-center py-8">No posts yet</p>';
+                    return;
+                }
+
+                container.innerHTML = posts.slice(0, 5).map(post => `
+                    <div class="bg-neutral-700 rounded-lg p-4 border border-neutral-600">
+                        <div class="flex items-center gap-2 mb-2">
+                            <img src="${post.platformIcon}" alt="${post.platformName}" class="w-4 h-4">
+                            <span class="text-sm font-medium">${post.platformName}</span>
+                            <span class="text-xs text-neutral-400">${post.timestamp}</span>
+                        </div>
+                        <p class="text-sm text-neutral-300 line-clamp-2">${post.content}</p>
+                        ${post.songTitle ? `<p class="text-xs text-neutral-400 mt-1">🎵 ${post.songTitle} - ${post.artist}</p>` : ''}
+                        <button onclick="deletePost('${post.id}')" class="text-red-400 hover:text-red-300 text-xs mt-2">Delete</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function formatTimestamp(timestamp) {
+            const now = new Date();
+            const postDate = new Date(timestamp);
+            const diffMs = now - postDate;
+            const diffMins = Math.floor(diffMs / (1000 * 60));
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffHours < 24) return `${diffHours}h ago`;
+            if (diffDays < 7) return `${diffDays}d ago`;
+            
+            return postDate.toLocaleDateString();
+        }
+
+        async function deletePost(postId) {
+            if (confirm('Are you sure you want to delete this post?')) {
+                try {
+                    const { error } = await supabaseClient
+                        .from('social_posts')
+                        .delete()
+                        .eq('id', postId);
+
+                    if (error) throw error;
+                    
+                    await loadRecentPosts();
+                } catch (error) {
+                    console.error('Error deleting post:', error);
+                    // Fallback to localStorage
+                    const posts = JSON.parse(localStorage.getItem('socialPosts') || '[]');
+                    const filtered = posts.filter(post => post.id !== `post-${postId}`);
+                    localStorage.setItem('socialPosts', JSON.stringify(filtered));
+                    await loadRecentPosts();
+                }
+            }
+        }
+
+        function showLoginScreen() {
+            loginScreen.classList.remove('hidden');
+            adminPanel.classList.add('hidden');
+        }
+
+        function showAdminPanel() {
+            loginScreen.classList.add('hidden');
+            adminPanel.classList.remove('hidden');
+            loadRecentPosts();
+        }
+
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+
+</html> 

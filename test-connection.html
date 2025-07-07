@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Connection Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .log { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .error { background: #ffe6e6; border-left: 4px solid #ff0000; }
+        .success { background: #e6ffe6; border-left: 4px solid #00aa00; }
+        .info { background: #e6f3ff; border-left: 4px solid #0066cc; }
+        button { padding: 10px 20px; margin: 5px; background: #007cba; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #005a87; }
+    </style>
+</head>
+<body>
+    <h1>Supabase Connection Test</h1>
+    <p>This page tests the connection to your Supabase database and helps debug journal entry loading issues.</p>
+    
+    <button onclick="testBasicConnection()">Test Basic Connection</button>
+    <button onclick="testTableAccess()">Test Table Access</button>
+    <button onclick="testSelectQuery()">Test Select Query</button>
+    <button onclick="clearLogs()">Clear Logs</button>
+    
+    <div id="logs"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://oujxbqzbgdsavuavkrep.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91anhicXpiZ2RzYXZ1YXZrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTg1NzAsImV4cCI6MjA2NjUzNDU3MH0.Sc7S82P08g6aKOfsuDzn9XmDoqfKyUZmoXj7p1_4MfM';
+
+        function log(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log ${type}`;
+            logEntry.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            logs.appendChild(logEntry);
+            console.log(message);
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+        }
+
+        async function testBasicConnection() {
+            log('🔧 Testing basic Supabase connection...', 'info');
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/`, {
+                    method: 'HEAD',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                log(`Response status: ${response.status}`, response.ok ? 'success' : 'error');
+                log(`Headers: ${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}`);
+                
+                if (response.ok) {
+                    log('✅ Basic connection successful!', 'success');
+                } else {
+                    log('❌ Basic connection failed', 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Connection error: ${error.message}`, 'error');
+                log(`Error details: ${JSON.stringify(error, null, 2)}`);
+            }
+        }
+
+        async function testTableAccess() {
+            log('📋 Testing journal_entries table access...', 'info');
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/journal_entries`, {
+                    method: 'HEAD',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                log(`Table access status: ${response.status}`, response.ok ? 'success' : 'error');
+                log(`Headers: ${JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2)}`);
+                
+                if (response.ok) {
+                    log('✅ Table access successful!', 'success');
+                } else {
+                    log('❌ Table access failed - check if table exists and RLS policies are correct', 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Table access error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testSelectQuery() {
+            log('📊 Testing SELECT query on journal_entries...', 'info');
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/journal_entries?select=*&limit=5`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                log(`Query status: ${response.status}`, response.ok ? 'success' : 'error');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log(`✅ Query successful! Found ${data.length} entries`, 'success');
+                    log(`Sample data: ${JSON.stringify(data, null, 2)}`);
+                    
+                    if (data.length === 0) {
+                        log('⚠️ No entries found in database. Add some entries using the admin panel.', 'info');
+                    } else {
+                        // Test data structure
+                        const firstEntry = data[0];
+                        log('🔍 Checking data structure...');
+                        log(`- ID: ${firstEntry.id}`);
+                        log(`- Title: ${firstEntry.title}`);
+                        log(`- Styling type: ${typeof firstEntry.styling}`);
+                        log(`- Tags type: ${typeof firstEntry.tags} (is array: ${Array.isArray(firstEntry.tags)})`);
+                        log(`- Images type: ${typeof firstEntry.images} (is array: ${Array.isArray(firstEntry.images)})`);
+                        log(`- Full content type: ${typeof firstEntry.full_content} (is array: ${Array.isArray(firstEntry.full_content)})`);
+                    }
+                } else {
+                    const errorText = await response.text();
+                    log(`❌ Query failed: ${errorText}`, 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Query error: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-run basic tests on page load
+        window.addEventListener('load', () => {
+            log('🚀 Page loaded. Click buttons above to test connection.', 'info');
+        });
+    </script>
+</body>
+</html> 

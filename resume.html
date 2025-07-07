@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sean Sneed - Strategic Business Professional</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.4;
+            color: #333;
+            background: white;
+            font-size: 11px;
+        }
+        
+        .container {
+            max-width: 8.5in;
+            margin: 0 auto;
+            padding: 0.5in;
+            background: white;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+        }
+        
+        .name {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+        
+        .title {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 12px;
+        }
+        
+        .contact-info {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 4px;
+        }
+        
+        .job {
+            margin-bottom: 18px;
+        }
+        
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 4px;
+        }
+        
+        .job-title {
+            font-weight: bold;
+            font-size: 13px;
+            color: #1a1a1a;
+        }
+        
+        .company {
+            font-weight: bold;
+            font-size: 12px;
+            color: #333;
+        }
+        
+        .duration {
+            font-size: 10px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .location {
+            font-size: 10px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+        
+        .description {
+            margin-bottom: 6px;
+            color: #444;
+        }
+        
+        .achievements {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .achievements li {
+            margin-bottom: 3px;
+            padding-left: 15px;
+            position: relative;
+            color: #444;
+        }
+        
+        .achievements li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .skills-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .skill-category {
+            margin-bottom: 12px;
+        }
+        
+        .skill-category-title {
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 4px;
+            color: #1a1a1a;
+        }
+        
+        .skill-list {
+            font-size: 10px;
+            color: #555;
+            line-height: 1.3;
+        }
+        
+        .education {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 8px;
+        }
+        
+        .degree {
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .school {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .year {
+            font-size: 10px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .summary {
+            font-size: 11px;
+            line-height: 1.5;
+            color: #444;
+            text-align: justify;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 20px;
+            color: #d32f2f;
+            background: #ffebee;
+            border: 1px solid #ffcdd2;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        @media print {
+            body {
+                font-size: 10px;
+            }
+            .container {
+                padding: 0.4in;
+            }
+            .section {
+                margin-bottom: 20px;
+            }
+            .job {
+                margin-bottom: 15px;
+            }
+            .loading, .error {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Loading indicator -->
+        <div id="loading" class="loading">
+            <p>Loading resume...</p>
+        </div>
+        
+        <!-- Error message -->
+        <div id="error" class="error" style="display: none;">
+            <p>Error loading resume data. Please try again later.</p>
+        </div>
+        
+        <!-- Resume content (will be populated dynamically) -->
+        <div id="resume-content" style="display: none;">
+            <div class="header" id="resume-header">
+                <!-- Header content will be loaded here -->
+            </div>
+
+            <div class="section" id="professional-summary">
+                <!-- Professional summary will be loaded here -->
+            </div>
+
+            <div class="section" id="professional-experience">
+                <!-- Experience entries will be loaded here -->
+            </div>
+
+            <div class="section" id="core-competencies">
+                <!-- Skills will be loaded here -->
+            </div>
+
+            <div class="section" id="education-section">
+                <!-- Education will be loaded here -->
+            </div>
+
+            <div class="section" id="key-achievements">
+                <!-- Achievements will be loaded here -->
+            </div>
+        </div>
+    </div>
+    
+    <div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+        <button onclick="window.print()" style="
+            background: #333;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        ">
+            💾 Save as PDF
+        </button>
+    </div>
+    
+    <script>
+        // Auto-hide print button when printing
+        window.addEventListener('beforeprint', function() {
+            document.querySelector('div[style*="position: fixed"]').style.display = 'none';
+        });
+        
+        window.addEventListener('afterprint', function() {
+            document.querySelector('div[style*="position: fixed"]').style.display = 'block';
+        });
+        
+        // Resume Data Manager
+        class ResumeManager {
+            constructor() {
+                this.supabaseUrl = 'https://oujxbqzbgdsavuavkrep.supabase.co';
+                this.supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91anhicXpiZ2RzYXZ1YXZrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTg1NzAsImV4cCI6MjA2NjUzNDU3MH0.Sc7S82P08g6aKOfsuDzn9XmDoqfKyUZmoXj7p1_4MfM';
+                
+                if (typeof supabase !== 'undefined') {
+                    this.supabase = supabase.createClient(this.supabaseUrl, this.supabaseKey);
+                } else {
+                    console.warn('Supabase not loaded, will use fallback data');
+                }
+            }
+            
+            async loadResumeData() {
+                try {
+                    console.log('Loading resume data...');
+                    
+                    // Load all data in parallel
+                    const [headerData, experienceData, skillsData, educationData, achievementsData] = await Promise.all([
+                        this.loadHeaderData(),
+                        this.loadExperienceData(),
+                        this.loadSkillsData(),
+                        this.loadEducationData(),
+                        this.loadAchievementsData()
+                    ]);
+                    
+                    console.log('Loaded header data:', headerData);
+                    
+                    // Render all sections
+                    this.renderHeader(headerData);
+                    this.renderProfessionalSummary(headerData);
+                    this.renderExperience(experienceData);
+                    this.renderSkills(skillsData);
+                    this.renderEducation(educationData);
+                    this.renderAchievements(achievementsData);
+                    
+                    // Show content and hide loading
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('resume-content').style.display = 'block';
+                    
+                    console.log('Resume loaded successfully');
+                    
+                } catch (error) {
+                    console.error('Error loading resume:', error);
+                    this.showError(error.message);
+                }
+            }
+            
+            async loadHeaderData() {
+                if (this.supabase) {
+                    const { data, error } = await this.supabase
+                        .from('resume_header')
+                        .select('*')
+                        .eq('id', 1)
+                        .single();
+                    
+                    if (error) {
+                        console.warn('Supabase header error:', error);
+                        // If no data exists yet, return fallback but don't log as error
+                        if (error.code === 'PGRST116') {
+                            console.log('No header data found, using fallback');
+                        }
+                        return this.getFallbackHeaderData();
+                    }
+                    
+                    console.log('Header data loaded from Supabase:', data);
+                    return data;
+                }
+                
+                return this.getFallbackHeaderData();
+            }
+            
+            async loadExperienceData() {
+                if (this.supabase) {
+                    const { data, error } = await this.supabase
+                        .from('resume_experience')
+                        .select('*')
+                        .order('display_order', { ascending: true });
+                    
+                    if (error) {
+                        console.warn('Supabase experience error:', error);
+                        return this.getFallbackExperienceData();
+                    }
+                    
+                    return data;
+                }
+                
+                return this.getFallbackExperienceData();
+            }
+            
+            async loadSkillsData() {
+                if (this.supabase) {
+                    const { data, error } = await this.supabase
+                        .from('resume_skills')
+                        .select('*')
+                        .order('display_order', { ascending: true });
+                    
+                    if (error) {
+                        console.warn('Supabase skills error:', error);
+                        return this.getFallbackSkillsData();
+                    }
+                    
+                    return data;
+                }
+                
+                return this.getFallbackSkillsData();
+            }
+            
+            async loadEducationData() {
+                if (this.supabase) {
+                    const { data, error } = await this.supabase
+                        .from('resume_education')
+                        .select('*')
+                        .order('display_order', { ascending: true });
+                    
+                    if (error) {
+                        console.warn('Supabase education error:', error);
+                        return this.getFallbackEducationData();
+                    }
+                    
+                    return data;
+                }
+                
+                return this.getFallbackEducationData();
+            }
+            
+            async loadAchievementsData() {
+                if (this.supabase) {
+                    const { data, error } = await this.supabase
+                        .from('resume_achievements')
+                        .select('*')
+                        .order('display_order', { ascending: true });
+                    
+                    if (error) {
+                        console.warn('Supabase achievements error:', error);
+                        return this.getFallbackAchievementsData();
+                    }
+                    
+                    return data;
+                }
+                
+                return this.getFallbackAchievementsData();
+            }
+            
+            renderHeader(headerData) {
+                const headerElement = document.getElementById('resume-header');
+                headerElement.innerHTML = `
+                    <div class="name">${headerData.full_name}</div>
+                    <div class="title">${headerData.professional_title}</div>
+                    <div class="contact-info">
+                        ${headerData.contact_info}
+                    </div>
+                `;
+            }
+            
+            renderProfessionalSummary(headerData) {
+                const summaryElement = document.getElementById('professional-summary');
+                summaryElement.innerHTML = `
+                    <div class="section-title">Professional Summary</div>
+                    <div class="summary">
+                        ${headerData.professional_summary}
+                    </div>
+                `;
+            }
+            
+            renderExperience(experienceData) {
+                const experienceElement = document.getElementById('professional-experience');
+                const experienceHtml = experienceData.map(exp => `
+                    <div class="job">
+                        <div class="job-header">
+                            <div>
+                                <div class="job-title">${exp.job_title}</div>
+                                <div class="company">${exp.company}</div>
+                            </div>
+                            <div class="duration">${exp.duration}</div>
+                        </div>
+                        ${exp.location ? `<div class="location">${exp.location}</div>` : ''}
+                        ${exp.description ? `<div class="description">${exp.description}</div>` : ''}
+                        ${exp.achievements && exp.achievements.length > 0 ? `
+                            <ul class="achievements">
+                                ${exp.achievements.map(achievement => `<li>${achievement}</li>`).join('')}
+                            </ul>
+                        ` : ''}
+                    </div>
+                `).join('');
+                
+                experienceElement.innerHTML = `
+                    <div class="section-title">Professional Experience</div>
+                    ${experienceHtml}
+                `;
+            }
+            
+            renderSkills(skillsData) {
+                const skillsElement = document.getElementById('core-competencies');
+                
+                // Group skills into two columns
+                const leftColumn = [];
+                const rightColumn = [];
+                
+                skillsData.forEach((skill, index) => {
+                    if (index % 2 === 0) {
+                        leftColumn.push(skill);
+                    } else {
+                        rightColumn.push(skill);
+                    }
+                });
+                
+                const renderSkillColumn = (skills) => skills.map(skill => `
+                    <div class="skill-category">
+                        <div class="skill-category-title">${skill.category_name}</div>
+                        <div class="skill-list">${skill.skill_list}</div>
+                    </div>
+                `).join('');
+                
+                skillsElement.innerHTML = `
+                    <div class="section-title">Core Competencies</div>
+                    <div class="skills-grid">
+                        <div>
+                            ${renderSkillColumn(leftColumn)}
+                        </div>
+                        <div>
+                            ${renderSkillColumn(rightColumn)}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            renderEducation(educationData) {
+                const educationElement = document.getElementById('education-section');
+                const educationHtml = educationData.map(edu => `
+                    <div class="education">
+                        <div>
+                            <div class="degree">${edu.degree}</div>
+                            <div class="school">${edu.institution}</div>
+                        </div>
+                        <div class="year">${edu.graduation_year}</div>
+                    </div>
+                `).join('');
+                
+                educationElement.innerHTML = `
+                    <div class="section-title">Education & Professional Development</div>
+                    ${educationHtml}
+                `;
+            }
+            
+            renderAchievements(achievementsData) {
+                const achievementsElement = document.getElementById('key-achievements');
+                const achievementsHtml = achievementsData.map(achievement => `
+                    <li>${achievement.achievement}</li>
+                `).join('');
+                
+                achievementsElement.innerHTML = `
+                    <div class="section-title">Key Achievements</div>
+                    <ul class="achievements">
+                        ${achievementsHtml}
+                    </ul>
+                `;
+            }
+            
+            showError(message) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error').innerHTML = `<p>Error loading resume: ${message}</p>`;
+            }
+            
+            // Fallback data methods (use current static data as fallback)
+            getFallbackHeaderData() {
+                return {
+                    full_name: 'SEAN SNEED',
+                    professional_title: 'Creative Director & Product Designer | Design Strategist | Digital Innovation',
+                    contact_info: 'San Francisco, CA | email@seansneed.com | linkedin.com/in/seansneed',
+                    professional_summary: 'Creative Director and Product Designer with over 8 years of experience transforming complex ideas into beautiful, functional digital experiences. Proven track record in co-founding successful companies, leading cross-functional teams, and driving business transformation through strategic design thinking. Experienced in scaling design agencies, developing innovative technology solutions, and collaborating with major brands like Nike and Apple to deliver exceptional results.'
+                };
+            }
+            
+            getFallbackExperienceData() {
+                return [
+                    {
+                        job_title: 'Co-Founder & Design Strategist',
+                        company: 'Colour International, LLC',
+                        duration: 'March 2024 - Present',
+                        location: 'San Francisco, CA',
+                        description: 'Co-founded a creative collective focused on innovative business solutions and digital strategy.',
+                        achievements: [
+                            'Leading cross-functional teams to analyze business requirements and develop actionable solutions',
+                            'Maintaining client relationships and ensuring project deliverables meet business objectives',
+                            'Developing strategic frameworks for digital transformation and business improvement initiatives',
+                            'Collaborating with technical teams to implement solutions that drive measurable business results'
+                        ]
+                    },
+                    {
+                        job_title: 'Founder & Design Strategist',
+                        company: 'TheTheory, LLC',
+                        duration: 'May 2020 - July 2024',
+                        location: 'San Francisco, CA',
+                        description: 'Established a transcontinental, cross-disciplinary design agency focusing on brand strategy and business improvement.',
+                        achievements: [
+                            'Led client discovery sessions to identify business requirements and translate them into actionable solutions',
+                            'Ensured alignment with business goals and collaborated with technical teams to implement digital solutions',
+                            'Improved client business processes through strategic design thinking and technology implementation',
+                            'Built and managed a global team of designers and strategists across multiple time zones'
+                        ]
+                    }
+                    // Add more fallback data as needed
+                ];
+            }
+            
+            getFallbackSkillsData() {
+                return [
+                    {
+                        category_name: 'Design Leadership',
+                        skill_list: 'Creative Direction, Design Strategy, Brand Identity, Cross-functional Team Leadership, Design Systems, Digital Transformation'
+                    },
+                    {
+                        category_name: 'Product & UX',
+                        skill_list: 'Product Strategy, UX/UI Design, User Experience Research, Prototyping, Customer Journey Mapping, Digital Product Development'
+                    },
+                    {
+                        category_name: 'Business Strategy',
+                        skill_list: 'Business Development, Strategic Planning, Client Relationship Management, Project Management, Operational Improvement'
+                    },
+                    {
+                        category_name: 'Technology & Innovation',
+                        skill_list: 'Digital Strategy, Technology Implementation, Content Strategy, Data Analysis, Process Optimization, Innovation Management'
+                    }
+                ];
+            }
+            
+            getFallbackEducationData() {
+                return [
+                    {
+                        degree: 'Continuous Learning in Design Strategy & Business Innovation',
+                        institution: 'Various Institutions & Professional Development Programs',
+                        graduation_year: 'Ongoing'
+                    }
+                ];
+            }
+            
+            getFallbackAchievementsData() {
+                return [
+                    { achievement: 'Co-founded multiple successful technology companies with successful exit (PriceSlash acquired by Mark Cuban portfolio company)' },
+                    { achievement: 'Built and scaled transcontinental design agency serving clients across multiple industries' },
+                    { achievement: '8+ years of experience working with major brands including Nike and Apple' },
+                    { achievement: 'Completed 150+ projects with 50+ happy clients across diverse industries' },
+                    { achievement: 'Expertise in leading cross-functional teams and driving digital transformation initiatives' }
+                ];
+            }
+        }
+        
+        // Initialize resume manager and load data
+        document.addEventListener('DOMContentLoaded', async () => {
+            const resumeManager = new ResumeManager();
+            await resumeManager.loadResumeData();
+        });
+    </script>
+</body>
+</html> 

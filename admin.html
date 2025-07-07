@@ -1,0 +1,2092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Sean Sneed</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .loading { opacity: 0.5; pointer-events: none; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Login Screen -->
+    <div id="login-screen" class="min-h-screen flex items-center justify-center bg-gray-900">
+        <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+            <h1 class="text-2xl font-bold text-center mb-6">Admin Access</h1>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <input type="password" id="password" placeholder="Enter password" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                    Access Admin
+                </button>
+            </form>
+            <div id="login-error" class="text-red-600 text-sm mt-2 hidden"></div>
+        </div>
+    </div>
+
+    <!-- Main Admin Dashboard -->
+    <div id="admin-dashboard" class="hidden">
+        <nav class="bg-white shadow-sm border-b">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <h1 class="text-xl font-semibold text-gray-900">Admin Dashboard</h1>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm text-gray-600">Welcome, Sean</span>
+                        <button onclick="logout()" class="text-sm text-red-600 hover:text-red-800">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Tab Navigation -->
+            <div class="flex space-x-1 bg-gray-100 p-1 rounded-lg mb-8">
+                <button onclick="switchTab('social')" class="tab-btn flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors bg-white text-gray-900 shadow-sm">
+                    Social Posts
+                </button>
+                <button onclick="switchTab('journal')" class="tab-btn flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors text-gray-600 hover:text-gray-900">
+                    Journal Entries
+                </button>
+                <button onclick="switchTab('index')" class="tab-btn flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors text-gray-600 hover:text-gray-900">
+                    Index Page
+                </button>
+                <button onclick="switchTab('resume')" class="tab-btn flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors text-gray-600 hover:text-gray-900">
+                    Resume
+                </button>
+            </div>
+
+            <!-- Social Posts Tab -->
+            <div id="social-tab" class="tab-content active">
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                    <h2 class="text-lg font-semibold mb-4">Create Social Post</h2>
+                    <form id="social-form" class="space-y-6">
+                        <!-- Post Type Selection -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Post Type</label>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                <label class="relative">
+                                    <input type="radio" name="postType" value="bluesky" class="sr-only peer" checked>
+                                    <div class="p-4 bg-gray-50 border border-gray-300 rounded-lg cursor-pointer peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <img src="/images/icons/w_twitter_icon.svg" alt="Bluesky" class="w-5 h-5">
+                                            <span class="font-medium text-sm">Bluesky</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500">Quick thoughts & updates</p>
+                                    </div>
+                                </label>
+                                
+                                <label class="relative">
+                                    <input type="radio" name="postType" value="instagram" class="sr-only peer">
+                                    <div class="p-4 bg-gray-50 border border-gray-300 rounded-lg cursor-pointer peer-checked:border-pink-500 peer-checked:bg-pink-50 transition-all">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <img src="/images/icons/w_instagram_icon.svg" alt="Instagram" class="w-5 h-5">
+                                            <span class="font-medium text-sm">Instagram</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500">Visual content & lifestyle</p>
+                                    </div>
+                                </label>
+                                
+                                <label class="relative">
+                                    <input type="radio" name="postType" value="linkedin" class="sr-only peer">
+                                    <div class="p-4 bg-gray-50 border border-gray-300 rounded-lg cursor-pointer peer-checked:border-blue-600 peer-checked:bg-blue-50 transition-all">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <img src="/images/icons/w_linkedin_icon.svg" alt="LinkedIn" class="w-5 h-5">
+                                            <span class="font-medium text-sm">LinkedIn</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500">Professional insights</p>
+                                    </div>
+                                </label>
+                                
+                                <label class="relative">
+                                    <input type="radio" name="postType" value="journal" class="sr-only peer">
+                                    <div class="p-4 bg-gray-50 border border-gray-300 rounded-lg cursor-pointer peer-checked:border-gray-400 peer-checked:bg-gray-100 transition-all">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <img src="/images/icons/book_open_icon.svg" alt="Journal" class="w-5 h-5">
+                                            <span class="font-medium text-sm">Journal</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500">Personal reflections</p>
+                                    </div>
+                                </label>
+                                
+                                <label class="relative">
+                                    <input type="radio" name="postType" value="apple_music" class="sr-only peer">
+                                    <div class="p-4 bg-gray-50 border border-gray-300 rounded-lg cursor-pointer peer-checked:border-pink-500 peer-checked:bg-pink-50 transition-all">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <img src="/images/icons/apple_icon.svg" alt="Apple Music" class="w-5 h-5">
+                                            <span class="font-medium text-sm">Apple Music</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500">Music sharing</p>
+                                    </div>
+                                </label>
+                                
+                                <label class="relative">
+                                    <input type="radio" name="postType" value="spotify" class="sr-only peer">
+                                    <div class="p-4 bg-gray-50 border border-gray-300 rounded-lg cursor-pointer peer-checked:border-green-500 peer-checked:bg-green-50 transition-all">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <img src="/images/icons/spotify_icon.svg" alt="Spotify" class="w-5 h-5">
+                                            <span class="font-medium text-sm">Spotify</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500">Music discovery</p>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Content -->
+                        <div>
+                            <label for="social-content-input" class="block text-sm font-medium text-gray-700 mb-2">Content</label>
+                            <textarea id="social-content-input" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-vertical" placeholder="What's on your mind?" required></textarea>
+                        </div>
+
+                        <!-- Music Fields (hidden by default) -->
+                        <div id="social-music-fields" class="hidden space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="social-song-title" class="block text-sm font-medium text-gray-700 mb-2">Song Title</label>
+                                    <input type="text" id="social-song-title" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Song name">
+                                </div>
+                                <div>
+                                    <label for="social-artist" class="block text-sm font-medium text-gray-700 mb-2">Artist</label>
+                                    <input type="text" id="social-artist" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Artist name">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="social-album" class="block text-sm font-medium text-gray-700 mb-2">Album</label>
+                                    <input type="text" id="social-album" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Album name">
+                                </div>
+                                <div>
+                                    <label for="social-duration" class="block text-sm font-medium text-gray-700 mb-2">Duration</label>
+                                    <input type="text" id="social-duration" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="3:45">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Journal Fields (hidden by default) -->
+                        <div id="social-journal-fields" class="hidden space-y-4">
+                            <div>
+                                <label for="social-tags" class="block text-sm font-medium text-gray-700 mb-2">Tags (comma separated)</label>
+                                <input type="text" id="social-tags" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Design, Reflection, Tools">
+                            </div>
+                            <div>
+                                <label for="social-read-time" class="block text-sm font-medium text-gray-700 mb-2">Read Time</label>
+                                <input type="text" id="social-read-time" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="2 min read">
+                            </div>
+                        </div>
+
+                        <!-- Image Upload -->
+                        <div>
+                            <label for="social-image" class="block text-sm font-medium text-gray-700 mb-2">Image (optional)</label>
+                            <input type="file" id="social-image" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Album Art Upload (for music posts) -->
+                        <div id="social-album-art-field" class="hidden">
+                            <label for="social-album-art" class="block text-sm font-medium text-gray-700 mb-2">Album Art (optional)</label>
+                            <input type="file" id="social-album-art" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- Social Metrics -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Social Metrics (optional)</label>
+                            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                                <div>
+                                    <label for="social-likes" class="block text-xs text-gray-500 mb-1">Likes</label>
+                                    <input type="number" id="social-likes" min="0" class="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                </div>
+                                <div id="social-reposts-field" class="hidden">
+                                    <label for="social-reposts" class="block text-xs text-gray-500 mb-1">Reposts</label>
+                                    <input type="number" id="social-reposts" min="0" class="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                </div>
+                                <div id="social-replies-field" class="hidden">
+                                    <label for="social-replies" class="block text-xs text-gray-500 mb-1">Replies</label>
+                                    <input type="number" id="social-replies" min="0" class="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                </div>
+                                <div id="social-comments-field" class="hidden">
+                                    <label for="social-comments" class="block text-xs text-gray-500 mb-1">Comments</label>
+                                    <input type="number" id="social-comments" min="0" class="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                </div>
+                                <div id="social-shares-field" class="hidden">
+                                    <label for="social-shares" class="block text-xs text-gray-500 mb-1">Shares</label>
+                                    <input type="number" id="social-shares" min="0" class="w-full px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-2">Leave blank for auto-generated values</p>
+                        </div>
+
+                        <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+                            Publish Post
+                        </button>
+                        <button type="button" onclick="cancelSocialEdit()" class="ml-2 bg-gray-400 text-white py-2 px-4 rounded-md hover:bg-gray-500 transition-colors hidden" id="cancel-social-btn">
+                            Cancel Edit
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Social Posts List -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h3 class="text-lg font-semibold mb-4">Recent Posts</h3>
+                    <div id="social-posts-list" class="space-y-4">
+                        <!-- Posts will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Journal Entries Tab -->
+            <div id="journal-tab" class="tab-content">
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                    <h2 class="text-lg font-semibold mb-4">Create Journal Entry</h2>
+                    <form id="journal-form" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                            <input type="text" id="journal-title" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                            <input type="text" id="journal-company" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <textarea id="journal-description" rows="2" required
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Content</label>
+                            <textarea id="journal-content-input" rows="6" required
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tags (comma separated)</label>
+                            <input type="text" id="journal-tags" placeholder="work, design, strategy"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+                            Publish Entry
+                        </button>
+                        <button type="button" onclick="cancelJournalEdit()" class="ml-2 bg-gray-400 text-white py-2 px-4 rounded-md hover:bg-gray-500 transition-colors hidden" id="cancel-journal-btn">
+                            Cancel Edit
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Journal Entries List -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h3 class="text-lg font-semibold mb-4">Recent Entries</h3>
+                    <div id="journal-entries-list" class="space-y-4">
+                        <!-- Entries will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Index Page Tab -->
+            <div id="index-tab" class="tab-content">
+                <div class="space-y-6">
+                    <!-- Index Page Header -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-lg font-semibold mb-4">Homepage Header</h2>
+                        <form id="index-header-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Badge Text</label>
+                                <input type="text" id="index-badge" required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                       placeholder="Award-Winning Design Strategist">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Main Heading</label>
+                                <input type="text" id="index-heading" required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                       placeholder="Sean Sneed, Design Strategist">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Subheading</label>
+                                <textarea id="index-subheading" rows="3" required
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                          placeholder="Crafting exceptional digital experiences..."></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                                <input type="text" id="index-location" required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                       placeholder="San Francisco, CA">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Timezone</label>
+                                <input type="text" id="index-timezone" required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                       placeholder="PST (GMT-8)">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Availability Status</label>
+                                <input type="text" id="index-availability" required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                       placeholder="Available for Projects">
+                            </div>
+                            <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+                                Update Header
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Index Page About Section -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-lg font-semibold mb-4">About Section</h2>
+                        <form id="index-about-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Profile Summary</label>
+                                <textarea id="index-profile-summary" rows="4" required
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                          placeholder="I'm Sean Sneed, a passionate Creative Director..."></textarea>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Projects Completed</label>
+                                    <input type="text" id="index-projects" required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                           placeholder="150+">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Happy Clients</label>
+                                    <input type="text" id="index-clients" required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                           placeholder="50+">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Years Experience</label>
+                                    <input type="text" id="index-experience" required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                           placeholder="8+">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Core Skills (comma separated - max 6)</label>
+                                <textarea id="index-skills" rows="3" required
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                          placeholder="Product Strategy, UX/UI Design, Design Systems, Brand Identity, Creative Direction, Prototyping"></textarea>
+                            </div>
+                            <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+                                Update About Section
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Index Page Featured Experience -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-lg font-semibold mb-4">Featured Experience (Homepage)</h2>
+                        <p class="text-sm text-gray-600 mb-4">Select which experience entries to feature on the homepage (max 6)</p>
+                        <form id="index-experience-form" class="space-y-4">
+                            <div id="experience-selection" class="space-y-2">
+                                <!-- Experience checkboxes will be loaded here -->
+                            </div>
+                            <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+                                Update Featured Experience
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resume Tab -->
+            <div id="resume-tab" class="tab-content">
+                <div class="space-y-6">
+                    <!-- Resume Header -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-lg font-semibold mb-4">Resume Header</h2>
+                        <form id="resume-header-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                <input type="text" id="resume-name" required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Professional Title</label>
+                                <input type="text" id="resume-title" required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Contact Info</label>
+                                <textarea id="resume-contact" rows="3" required
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Professional Summary</label>
+                                <textarea id="resume-summary" rows="4" required
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                            </div>
+                            <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+                                Update Header
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Experience -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-lg font-semibold mb-4">Experience</h2>
+                        <form id="resume-experience-form" class="space-y-4 mb-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+                                    <input type="text" id="experience-title" required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                                    <input type="text" id="experience-company" required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Duration</label>
+                                    <input type="text" id="experience-duration" required
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                                    <input type="text" id="experience-location"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <textarea id="experience-description" rows="3" required
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Achievements (one per line)</label>
+                                <textarea id="experience-achievements" rows="4"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Display Order</label>
+                                    <input type="number" id="experience-order" min="0" value="0"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Current Position</label>
+                                    <input type="checkbox" id="experience-current"
+                                           class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                </div>
+                            </div>
+                            <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+                                Add Experience
+                            </button>
+                            <button type="button" onclick="cancelExperienceEdit()" class="ml-2 bg-gray-400 text-white py-2 px-4 rounded-md hover:bg-gray-500 transition-colors hidden" id="cancel-experience-btn">
+                                Cancel Edit
+                            </button>
+                        </form>
+
+                        <!-- Experience List -->
+                        <div id="experience-list" class="space-y-4">
+                            <!-- Experience entries will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Skills -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-lg font-semibold mb-4">Skills & Competencies</h2>
+                        <form id="resume-skills-form" class="space-y-4 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Category Name</label>
+                                <input type="text" id="skills-category" required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                       placeholder="e.g., Design Leadership">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Skills (comma separated)</label>
+                                <textarea id="skills-list" rows="3" required
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                          placeholder="e.g., Creative Direction, Design Strategy, Brand Identity"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Display Order</label>
+                                <input type="number" id="skills-order" min="0" value="0"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+                                Add Skills Category
+                            </button>
+                            <button type="button" onclick="cancelSkillsEdit()" class="ml-2 bg-gray-400 text-white py-2 px-4 rounded-md hover:bg-gray-500 transition-colors hidden" id="cancel-skills-btn">
+                                Cancel Edit
+                            </button>
+                        </form>
+
+                        <!-- Skills List -->
+                        <div id="skills-list-container" class="space-y-4">
+                            <!-- Skills entries will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Education -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-lg font-semibold mb-4">Education</h2>
+                        <form id="resume-education-form" class="space-y-4 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Degree/Certification</label>
+                                <input type="text" id="education-degree" required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Institution</label>
+                                <input type="text" id="education-institution" required
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Graduation Year</label>
+                                    <input type="text" id="education-year"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                                    <input type="text" id="education-location"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <textarea id="education-description" rows="2"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Display Order</label>
+                                <input type="number" id="education-order" min="0" value="0"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+                                Add Education
+                            </button>
+                            <button type="button" onclick="cancelEducationEdit()" class="ml-2 bg-gray-400 text-white py-2 px-4 rounded-md hover:bg-gray-500 transition-colors hidden" id="cancel-education-btn">
+                                Cancel Edit
+                            </button>
+                        </form>
+
+                        <!-- Education List -->
+                        <div id="education-list-container" class="space-y-4">
+                            <!-- Education entries will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Achievements -->
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h2 class="text-lg font-semibold mb-4">Key Achievements</h2>
+                        <form id="resume-achievements-form" class="space-y-4 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Achievement</label>
+                                <textarea id="achievement-text" rows="3" required
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                          placeholder="Describe the achievement"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Additional Description</label>
+                                <textarea id="achievement-description" rows="2"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                          placeholder="Optional additional details"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Display Order</label>
+                                <input type="number" id="achievement-order" min="0" value="0"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+                                Add Achievement
+                            </button>
+                            <button type="button" onclick="cancelAchievementEdit()" class="ml-2 bg-gray-400 text-white py-2 px-4 rounded-md hover:bg-gray-500 transition-colors hidden" id="cancel-achievement-btn">
+                                Cancel Edit
+                            </button>
+                        </form>
+
+                        <!-- Achievements List -->
+                        <div id="achievements-list-container" class="space-y-4">
+                            <!-- Achievements entries will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Security configuration
+        const ADMIN_PASSWORD = 'seansneed2025';
+        const SESSION_TIMEOUT = 3600000; // 1 hour
+        let sessionTimer;
+
+        // Supabase configuration
+        const SUPABASE_URL = 'https://oujxbqzbgdsavuavkrep.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91anhicXpiZ2RzYXZ1YXZrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTg1NzAsImV4cCI6MjA2NjUzNDU3MH0.Sc7S82P08g6aKOfsuDzn9XmDoqfKyUZmoXj7p1_4MfM';
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Global variables for edit modes
+        let editingSocialPostId = null;
+        let editingJournalId = null;
+        let editingExperienceId = null;
+        let editingSkillId = null;
+        let editingEducationId = null;
+        let editingAchievementId = null;
+
+        // Security functions
+        function checkPassword(password) {
+            return password === ADMIN_PASSWORD;
+        }
+
+        function startSession() {
+            sessionStorage.setItem('adminAuthenticated', 'true');
+            sessionStorage.setItem('sessionStart', Date.now().toString());
+            startSessionTimer();
+        }
+
+        function startSessionTimer() {
+            if (sessionTimer) clearTimeout(sessionTimer);
+            sessionTimer = setTimeout(() => {
+                logout();
+                alert('Session expired. Please login again.');
+            }, SESSION_TIMEOUT);
+        }
+
+        function checkAuth() {
+            const isAuthenticated = sessionStorage.getItem('adminAuthenticated');
+            const sessionStart = sessionStorage.getItem('sessionStart');
+            
+            if (!isAuthenticated || !sessionStart) {
+                return false;
+            }
+            
+            const elapsed = Date.now() - parseInt(sessionStart);
+            if (elapsed > SESSION_TIMEOUT) {
+                logout();
+                return false;
+            }
+            
+            return true;
+        }
+
+        function logout() {
+            sessionStorage.removeItem('adminAuthenticated');
+            sessionStorage.removeItem('sessionStart');
+            if (sessionTimer) clearTimeout(sessionTimer);
+            showLogin();
+        }
+
+        function showLogin() {
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('admin-dashboard').classList.add('hidden');
+        }
+
+        function showDashboard() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('admin-dashboard').classList.remove('hidden');
+        }
+
+        // Login handling
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('login-error');
+            
+            if (checkPassword(password)) {
+                startSession();
+                showDashboard();
+                loadAllData();
+                errorDiv.classList.add('hidden');
+            } else {
+                errorDiv.textContent = 'Invalid password';
+                errorDiv.classList.remove('hidden');
+            }
+        });
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Update tab buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
+                btn.classList.add('text-gray-600', 'hover:text-gray-900');
+            });
+            
+            event.target.classList.add('bg-white', 'text-gray-900', 'shadow-sm');
+            event.target.classList.remove('text-gray-600', 'hover:text-gray-900');
+        }
+
+        // Utility functions
+        function formatDate(dateStr) {
+            return new Date(dateStr).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function truncateText(text, maxLength = 100) {
+            if (text.length <= maxLength) return text;
+            return text.substring(0, maxLength) + '...';
+        }
+
+        // Social Posts functions
+        async function handleSocialPost(e) {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = editingSocialPostId ? 'Updating...' : 'Publishing...';
+            submitBtn.disabled = true;
+            
+            try {
+                const formData = new FormData(e.target);
+                const postType = formData.get('postType');
+                const content = document.getElementById('social-content-input').value;
+                
+                const post = {
+                    platform: postType,
+                    content: content,
+                    author: 'Sean Sneed',
+                    post_type: getSocialPostTypeCategory(postType),
+                    likes: parseInt(document.getElementById('social-likes').value) || Math.floor(Math.random() * 50) + 10
+                };
+
+                // Add platform-specific data
+                await addSocialPlatformSpecificData(post, postType);
+
+                // Handle main image upload
+                const imageFile = document.getElementById('social-image').files[0];
+                if (imageFile) {
+                    const imageUrl = await uploadToSupabaseStorage(imageFile, 'images');
+                    if (imageUrl) {
+                        post.image = imageUrl;
+                        if (post.post_type === 'text') {
+                            post.post_type = 'image';
+                        }
+                    }
+                }
+
+                // Handle album art upload for music posts
+                const albumArtFile = document.getElementById('social-album-art').files[0];
+                if (albumArtFile && (postType === 'apple_music' || postType === 'spotify')) {
+                    const albumArtUrl = await uploadToSupabaseStorage(albumArtFile, 'images');
+                    if (albumArtUrl) {
+                        post.albumArt = albumArtUrl;
+                    }
+                }
+
+                if (editingSocialPostId) {
+                    // Transform data for database update
+                    const dbUpdateData = {
+                        platform: post.platform,
+                        platform_name: post.platform_name,
+                        platform_icon: post.platform_icon,
+                        platform_color: post.platform_color,
+                        platform_text_color: post.platform_text_color,
+                        author: post.author,
+                        handle: post.handle,
+                        content: post.content,
+                        post_type: post.post_type,
+                        likes: post.likes || 0,
+                        reposts: post.reposts || 0,
+                        replies: post.replies || 0,
+                        comments: post.comments || 0,
+                        shares: post.shares || 0,
+                        image: post.image,
+                        album_art: post.albumArt,
+                        song_title: post.song_title,
+                        artist: post.artist,
+                        album: post.album,
+                        duration: post.duration,
+                        tags: post.tags || [],
+                        read_time: post.read_time
+                    };
+
+                    const { error } = await supabaseClient
+                        .from('social_posts')
+                        .update(dbUpdateData)
+                        .eq('id', editingSocialPostId);
+
+                    if (error) throw error;
+                    
+                    editingSocialPostId = null;
+                    document.getElementById('cancel-social-btn').classList.add('hidden');
+                    submitBtn.textContent = 'Publish Post';
+                    alert('Post updated successfully!');
+                } else {
+                    await saveSocialPostToSupabase(post);
+                    alert('Post published successfully!');
+                }
+
+                document.getElementById('social-form').reset();
+                // Hide conditional fields after reset
+                document.getElementById('social-music-fields').classList.add('hidden');
+                document.getElementById('social-journal-fields').classList.add('hidden');
+                document.getElementById('social-album-art-field').classList.add('hidden');
+                
+                await loadSocialPosts();
+                
+            } catch (error) {
+                console.error('Error with social post:', error);
+                alert('Error: ' + error.message);
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Upload file to Supabase Storage
+        async function uploadToSupabaseStorage(file, bucket) {
+            try {
+                const fileName = `${Date.now()}-${file.name}`;
+                
+                const { data, error } = await supabaseClient.storage
+                    .from(bucket)
+                    .upload(fileName, file);
+
+                if (error) throw error;
+
+                // Get public URL
+                const { data: urlData } = supabaseClient.storage
+                    .from(bucket)
+                    .getPublicUrl(fileName);
+
+                return urlData.publicUrl;
+            } catch (error) {
+                console.error('Error uploading file:', error);
+                return null;
+            }
+        }
+
+        function getSocialPostTypeCategory(platform) {
+            if (platform === 'apple_music' || platform === 'spotify') return 'music';
+            if (platform === 'journal') return 'journal';
+            return 'text';
+        }
+
+        async function addSocialPlatformSpecificData(post, postType) {
+            const platformData = {
+                bluesky: {
+                    platform_name: 'Bluesky',
+                    platform_icon: '/images/icons/w_twitter_icon.svg',
+                    platform_color: 'bg-[rgb(0,133,255)]',
+                    platform_text_color: 'text-white',
+                    handle: '@seansneed.bsky.social',
+                    reposts: parseInt(document.getElementById('social-reposts').value) || Math.floor(Math.random() * 20) + 1,
+                    replies: parseInt(document.getElementById('social-replies').value) || Math.floor(Math.random() * 30) + 1
+                },
+                instagram: {
+                    platform_name: 'Instagram',
+                    platform_icon: '/images/icons/w_instagram_icon.svg',
+                    platform_color: 'bg-gradient-to-r from-orange-500 via-purple-500 to-pink-500',
+                    platform_text_color: 'text-white',
+                    handle: '@theseansneed',
+                    comments: parseInt(document.getElementById('social-comments').value) || Math.floor(Math.random() * 40) + 5
+                },
+                linkedin: {
+                    platform_name: 'LinkedIn',
+                    platform_icon: '/images/icons/w_linkedin_icon.svg',
+                    platform_color: 'bg-[rgb(10,102,194)]',
+                    platform_text_color: 'text-white',
+                    handle: 'Sean Sneed',
+                    comments: parseInt(document.getElementById('social-comments').value) || Math.floor(Math.random() * 25) + 3,
+                    shares: parseInt(document.getElementById('social-shares').value) || Math.floor(Math.random() * 15) + 1
+                },
+                journal: {
+                    platform_name: 'Journal Entry',
+                    platform_icon: '/images/icons/book_open_icon.svg',
+                    platform_color: 'bg-white',
+                    platform_text_color: 'text-neutral-900',
+                    handle: 'Personal Reflection',
+                    tags: document.getElementById('social-tags').value.split(',').map(t => t.trim()).filter(t => t),
+                    read_time: document.getElementById('social-read-time').value || '2 min read',
+                    likes: 0
+                },
+                apple_music: {
+                    platform_name: 'Apple Music',
+                    platform_icon: '/images/icons/apple_icon.svg',
+                    platform_color: 'bg-gradient-to-r from-pink-500 to-rose-500',
+                    platform_text_color: 'text-white',
+                    handle: 'Currently Playing',
+                    song_title: document.getElementById('social-song-title').value,
+                    artist: document.getElementById('social-artist').value,
+                    album: document.getElementById('social-album').value,
+                    duration: document.getElementById('social-duration').value || '3:45'
+                },
+                spotify: {
+                    platform_name: 'Spotify',
+                    platform_icon: '/images/icons/spotify_icon.svg',
+                    platform_color: 'bg-gradient-to-r from-green-500 to-green-600',
+                    platform_text_color: 'text-white',
+                    handle: 'Recently Played',
+                    song_title: document.getElementById('social-song-title').value,
+                    artist: document.getElementById('social-artist').value,
+                    album: document.getElementById('social-album').value,
+                    duration: document.getElementById('social-duration').value || '3:45'
+                }
+            };
+
+            Object.assign(post, platformData[postType]);
+        }
+
+        async function saveSocialPostToSupabase(postData) {
+            try {
+                // Transform data to match database schema
+                const dbData = {
+                    platform: postData.platform,
+                    platform_name: postData.platform_name,
+                    platform_icon: postData.platform_icon,
+                    platform_color: postData.platform_color,
+                    platform_text_color: postData.platform_text_color,
+                    author: postData.author,
+                    handle: postData.handle,
+                    content: postData.content,
+                    post_type: postData.post_type,
+                    likes: postData.likes || 0,
+                    reposts: postData.reposts || 0,
+                    replies: postData.replies || 0,
+                    comments: postData.comments || 0,
+                    shares: postData.shares || 0,
+                    image: postData.image,
+                    album_art: postData.albumArt,
+                    song_title: postData.song_title,
+                    artist: postData.artist,
+                    album: postData.album,
+                    duration: postData.duration,
+                    tags: postData.tags || [],
+                    read_time: postData.read_time
+                };
+                
+                const { data, error } = await supabaseClient
+                    .from('social_posts')
+                    .insert([dbData])
+                    .select();
+
+                if (error) throw error;
+                
+                return data;
+            } catch (error) {
+                console.error('Error saving to Supabase:', error);
+                throw error;
+            }
+        }
+
+        async function loadSocialPosts() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('social_posts')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+
+                if (error) throw error;
+
+                const container = document.getElementById('social-posts-list');
+                container.innerHTML = data.map(post => `
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex items-center space-x-2">
+                                <img src="${post.platform_icon}" alt="${post.platform_name}" class="w-4 h-4">
+                                <span class="text-sm font-medium text-gray-900">${post.platform_name || post.platform}</span>
+                                <span class="text-xs text-gray-500">${formatDate(post.created_at)}</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="editSocialPost(${post.id})" class="text-blue-600 hover:text-blue-800 text-sm">Edit</button>
+                                <button onclick="deleteSocialPost(${post.id})" class="text-red-600 hover:text-red-800 text-sm">Delete</button>
+                            </div>
+                        </div>
+                        <p class="text-gray-700">${truncateText(post.content)}</p>
+                        ${post.song_title ? `<p class="text-xs text-gray-500 mt-1">🎵 ${post.song_title} - ${post.artist}</p>` : ''}
+                        ${post.tags && post.tags.length > 0 ? `<p class="text-xs text-gray-500 mt-1">📝 ${post.tags.join(', ')}</p>` : ''}
+                        <div class="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                            <span>❤️ ${post.likes}</span>
+                            ${post.reposts ? `<span>🔄 ${post.reposts}</span>` : ''}
+                            ${post.replies ? `<span>💬 ${post.replies}</span>` : ''}
+                            ${post.comments ? `<span>💬 ${post.comments}</span>` : ''}
+                            ${post.shares ? `<span>📤 ${post.shares}</span>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading social posts:', error);
+            }
+        }
+
+        async function editSocialPost(id) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('social_posts')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error) throw error;
+
+                editingSocialPostId = id;
+                
+                // Set the post type radio button
+                document.querySelector(`input[name="postType"][value="${data.platform}"]`).checked = true;
+                
+                // Trigger change event to show appropriate fields
+                const changeEvent = new Event('change');
+                document.querySelector(`input[name="postType"][value="${data.platform}"]`).dispatchEvent(changeEvent);
+                
+                // Fill basic content
+                document.getElementById('social-content-input').value = data.content || '';
+                
+                // Fill platform-specific fields
+                if (data.platform === 'apple_music' || data.platform === 'spotify') {
+                    document.getElementById('social-song-title').value = data.song_title || '';
+                    document.getElementById('social-artist').value = data.artist || '';
+                    document.getElementById('social-album').value = data.album || '';
+                    document.getElementById('social-duration').value = data.duration || '';
+                } else if (data.platform === 'journal') {
+                    document.getElementById('social-tags').value = data.tags ? data.tags.join(', ') : '';
+                    document.getElementById('social-read-time').value = data.read_time || '';
+                }
+
+                // Fill social metrics
+                document.getElementById('social-likes').value = data.likes || '';
+                if (data.reposts) document.getElementById('social-reposts').value = data.reposts;
+                if (data.replies) document.getElementById('social-replies').value = data.replies;
+                if (data.comments) document.getElementById('social-comments').value = data.comments;
+                if (data.shares) document.getElementById('social-shares').value = data.shares;
+
+                // Update UI for edit mode
+                const submitBtn = document.getElementById('social-form').querySelector('button[type="submit"]');
+                submitBtn.textContent = 'Update Post';
+                submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                submitBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+                
+                document.getElementById('cancel-social-btn').classList.remove('hidden');
+                
+                switchTab('social');
+                
+                // Scroll to form
+                document.querySelector('#social-form').scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error loading post for edit:', error);
+                alert('Error loading post for edit');
+            }
+        }
+
+        async function deleteSocialPost(id) {
+            if (!confirm('Are you sure you want to delete this post?')) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('social_posts')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                alert('Post deleted successfully!');
+                await loadSocialPosts();
+            } catch (error) {
+                console.error('Error deleting post:', error);
+                alert('Error deleting post');
+            }
+        }
+
+        function cancelSocialEdit() {
+            editingSocialPostId = null;
+            document.getElementById('social-form').reset();
+            
+            // Reset button styling and text
+            const submitBtn = document.getElementById('social-form').querySelector('button[type="submit"]');
+            submitBtn.textContent = 'Publish Post';
+            submitBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+            submitBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            
+            document.getElementById('cancel-social-btn').classList.add('hidden');
+            
+            // Hide all conditional fields
+            document.getElementById('social-music-fields').classList.add('hidden');
+            document.getElementById('social-journal-fields').classList.add('hidden');
+            document.getElementById('social-album-art-field').classList.add('hidden');
+            document.getElementById('social-reposts-field').classList.add('hidden');
+            document.getElementById('social-replies-field').classList.add('hidden');
+            document.getElementById('social-comments-field').classList.add('hidden');
+            document.getElementById('social-shares-field').classList.add('hidden');
+            
+            // Check the first radio button (bluesky) by default
+            document.querySelector('input[name="postType"][value="bluesky"]').checked = true;
+        }
+
+        // Journal functions
+        async function handleJournalEntry(e) {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = editingJournalId ? 'Updating...' : 'Publishing...';
+            submitBtn.disabled = true;
+            
+            try {
+                const contentValue = document.getElementById('journal-content-input').value;
+                const tagsValue = document.getElementById('journal-tags').value;
+                
+                const entryData = {
+                    title: document.getElementById('journal-title').value,
+                    company: document.getElementById('journal-company').value,
+                    description: document.getElementById('journal-description').value,
+                    full_content: contentValue ? contentValue.split('\n').filter(line => line.trim()) : [],
+                    tags: tagsValue ? tagsValue.split(',').map(tag => tag.trim()).filter(tag => tag) : [],
+                    read_time: "2 min read",
+                    icon: "/images/icons/book_open_icon.svg",
+                    styling: {
+                        backgroundColor: "bg-neutral-50",
+                        borderColor: "border-neutral-200",
+                        titleColor: "text-neutral-900",
+                        companyColor: "text-neutral-600",
+                        descriptionColor: "text-neutral-700",
+                        dateColor: "text-neutral-500"
+                    },
+                    images: [],
+                    featured: false,
+                    date_text: new Date().toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric' 
+                    })
+                };
+
+                if (editingJournalId) {
+                    const { error } = await supabaseClient
+                        .from('journal_entries')
+                        .update(entryData)
+                        .eq('id', editingJournalId);
+
+                    if (error) throw error;
+                    
+                    editingJournalId = null;
+                    document.getElementById('cancel-journal-btn').classList.add('hidden');
+                    submitBtn.textContent = 'Publish Entry';
+                    alert('Journal entry updated successfully!');
+                } else {
+                    const { error } = await supabaseClient
+                        .from('journal_entries')
+                        .insert([entryData]);
+
+                    if (error) throw error;
+                    alert('Journal entry published successfully!');
+                }
+
+                document.getElementById('journal-form').reset();
+                await loadJournalEntries();
+                
+            } catch (error) {
+                console.error('Error with journal entry:', error);
+                alert('Error: ' + error.message);
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        async function loadJournalEntries() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('journal_entries')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
+
+                if (error) throw error;
+
+                const container = document.getElementById('journal-entries-list');
+                container.innerHTML = data.map(entry => `
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h4 class="font-medium text-gray-900">${entry.title || 'Untitled'}</h4>
+                                <p class="text-sm text-gray-600">${entry.company || 'Unknown'}</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="editJournalEntry(${entry.id})" class="text-blue-600 hover:text-blue-800 text-sm">Edit</button>
+                                <button onclick="deleteJournalEntry(${entry.id})" class="text-red-600 hover:text-red-800 text-sm">Delete</button>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 mb-2">${truncateText(entry.description || 'No description')}</p>
+                        ${entry.tags && Array.isArray(entry.tags) && entry.tags.length > 0 ? `<p class="text-xs text-gray-500 mb-2">Tags: ${entry.tags.join(', ')}</p>` : ''}
+                        <div class="text-xs text-gray-500">${formatDate(entry.created_at)}</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading journal entries:', error);
+            }
+        }
+
+        async function editJournalEntry(id) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('journal_entries')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error) throw error;
+
+                editingJournalId = id;
+                document.getElementById('journal-title').value = data.title || '';
+                document.getElementById('journal-company').value = data.company || '';
+                document.getElementById('journal-description').value = data.description || '';
+                document.getElementById('journal-content-input').value = 
+                    Array.isArray(data.full_content) ? data.full_content.join('\n') : (data.full_content || '');
+                document.getElementById('journal-tags').value = 
+                    Array.isArray(data.tags) ? data.tags.join(', ') : (data.tags || '');
+                document.getElementById('journal-form').querySelector('button[type="submit"]').textContent = 'Update Entry';
+                document.getElementById('cancel-journal-btn').classList.remove('hidden');
+                
+                switchTab('journal');
+            } catch (error) {
+                console.error('Error loading entry for edit:', error);
+                alert('Error loading entry for edit');
+            }
+        }
+
+        async function deleteJournalEntry(id) {
+            if (!confirm('Are you sure you want to delete this entry?')) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('journal_entries')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                alert('Entry deleted successfully!');
+                await loadJournalEntries();
+            } catch (error) {
+                console.error('Error deleting entry:', error);
+                alert('Error deleting entry');
+            }
+        }
+
+        function cancelJournalEdit() {
+            editingJournalId = null;
+            document.getElementById('journal-form').reset();
+            document.getElementById('journal-form').querySelector('button[type="submit"]').textContent = 'Publish Entry';
+            document.getElementById('cancel-journal-btn').classList.add('hidden');
+        }
+
+        // Resume functions
+        async function handleResumeHeader(e) {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = 'Updating...';
+            submitBtn.disabled = true;
+            
+            try {
+                const headerData = {
+                    id: 1, // Use consistent ID
+                    full_name: document.getElementById('resume-name').value,
+                    professional_title: document.getElementById('resume-title').value,
+                    contact_info: document.getElementById('resume-contact').value,
+                    professional_summary: document.getElementById('resume-summary').value
+                };
+
+                const { error } = await supabaseClient
+                    .from('resume_header')
+                    .upsert(headerData);
+
+                if (error) throw error;
+
+                alert('Resume header updated successfully!');
+                
+            } catch (error) {
+                console.error('Error updating resume header:', error);
+                alert('Error: ' + error.message);
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        async function handleResumeExperience(e) {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = editingExperienceId ? 'Updating...' : 'Adding...';
+            submitBtn.disabled = true;
+            
+            try {
+                const experienceData = {
+                    job_title: document.getElementById('experience-title').value,
+                    company: document.getElementById('experience-company').value,
+                    duration: document.getElementById('experience-duration').value,
+                    location: document.getElementById('experience-location').value,
+                    description: document.getElementById('experience-description').value,
+                    achievements: document.getElementById('experience-achievements').value
+                        .split('\n').filter(line => line.trim()),
+                    display_order: parseInt(document.getElementById('experience-order').value) || 0,
+                    is_current: document.getElementById('experience-current').checked
+                };
+
+                if (editingExperienceId) {
+                    const { error } = await supabaseClient
+                        .from('resume_experience')
+                        .update(experienceData)
+                        .eq('id', editingExperienceId);
+
+                    if (error) throw error;
+                    
+                    editingExperienceId = null;
+                    document.getElementById('cancel-experience-btn').classList.add('hidden');
+                    submitBtn.textContent = 'Add Experience';
+                    alert('Experience updated successfully!');
+                } else {
+                    const { error } = await supabaseClient
+                        .from('resume_experience')
+                        .insert([experienceData]);
+
+                    if (error) throw error;
+                    alert('Experience added successfully!');
+                }
+
+                document.getElementById('resume-experience-form').reset();
+                await loadResumeData();
+                
+            } catch (error) {
+                console.error('Error with experience:', error);
+                alert('Error: ' + error.message);
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Skills functions
+        async function handleResumeSkills(e) {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = editingSkillId ? 'Updating...' : 'Adding...';
+            submitBtn.disabled = true;
+            
+            try {
+                const skillsData = {
+                    category_name: document.getElementById('skills-category').value,
+                    skill_list: document.getElementById('skills-list').value,
+                    display_order: parseInt(document.getElementById('skills-order').value) || 0
+                };
+
+                if (editingSkillId) {
+                    const { error } = await supabaseClient
+                        .from('resume_skills')
+                        .update(skillsData)
+                        .eq('id', editingSkillId);
+
+                    if (error) throw error;
+                    
+                    editingSkillId = null;
+                    document.getElementById('cancel-skills-btn').classList.add('hidden');
+                    submitBtn.textContent = 'Add Skills Category';
+                    alert('Skills category updated successfully!');
+                } else {
+                    const { error } = await supabaseClient
+                        .from('resume_skills')
+                        .insert([skillsData]);
+
+                    if (error) throw error;
+                    alert('Skills category added successfully!');
+                }
+
+                document.getElementById('resume-skills-form').reset();
+                await loadResumeData();
+                
+            } catch (error) {
+                console.error('Error with skills:', error);
+                alert('Error: ' + error.message);
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Education functions
+        async function handleResumeEducation(e) {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = editingEducationId ? 'Updating...' : 'Adding...';
+            submitBtn.disabled = true;
+            
+            try {
+                const educationData = {
+                    degree: document.getElementById('education-degree').value,
+                    institution: document.getElementById('education-institution').value,
+                    graduation_year: document.getElementById('education-year').value,
+                    location: document.getElementById('education-location').value,
+                    description: document.getElementById('education-description').value,
+                    display_order: parseInt(document.getElementById('education-order').value) || 0
+                };
+
+                if (editingEducationId) {
+                    const { error } = await supabaseClient
+                        .from('resume_education')
+                        .update(educationData)
+                        .eq('id', editingEducationId);
+
+                    if (error) throw error;
+                    
+                    editingEducationId = null;
+                    document.getElementById('cancel-education-btn').classList.add('hidden');
+                    submitBtn.textContent = 'Add Education';
+                    alert('Education updated successfully!');
+                } else {
+                    const { error } = await supabaseClient
+                        .from('resume_education')
+                        .insert([educationData]);
+
+                    if (error) throw error;
+                    alert('Education added successfully!');
+                }
+
+                document.getElementById('resume-education-form').reset();
+                await loadResumeData();
+                
+            } catch (error) {
+                console.error('Error with education:', error);
+                alert('Error: ' + error.message);
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Achievements functions
+        async function handleResumeAchievements(e) {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = editingAchievementId ? 'Updating...' : 'Adding...';
+            submitBtn.disabled = true;
+            
+            try {
+                const achievementData = {
+                    achievement: document.getElementById('achievement-text').value,
+                    description: document.getElementById('achievement-description').value,
+                    display_order: parseInt(document.getElementById('achievement-order').value) || 0
+                };
+
+                if (editingAchievementId) {
+                    const { error } = await supabaseClient
+                        .from('resume_achievements')
+                        .update(achievementData)
+                        .eq('id', editingAchievementId);
+
+                    if (error) throw error;
+                    
+                    editingAchievementId = null;
+                    document.getElementById('cancel-achievement-btn').classList.add('hidden');
+                    submitBtn.textContent = 'Add Achievement';
+                    alert('Achievement updated successfully!');
+                } else {
+                    const { error } = await supabaseClient
+                        .from('resume_achievements')
+                        .insert([achievementData]);
+
+                    if (error) throw error;
+                    alert('Achievement added successfully!');
+                }
+
+                document.getElementById('resume-achievements-form').reset();
+                await loadResumeData();
+                
+            } catch (error) {
+                console.error('Error with achievement:', error);
+                alert('Error: ' + error.message);
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        async function loadResumeData() {
+            try {
+                // Load header
+                const { data: headerData, error: headerError } = await supabaseClient
+                    .from('resume_header')
+                    .select('*')
+                    .eq('id', 1)
+                    .single();
+
+                if (headerData && !headerError) {
+                    document.getElementById('resume-name').value = headerData.full_name || '';
+                    document.getElementById('resume-title').value = headerData.professional_title || '';
+                    document.getElementById('resume-contact').value = headerData.contact_info || '';
+                    document.getElementById('resume-summary').value = headerData.professional_summary || '';
+                }
+
+                // Load experience
+                const { data: experienceData, error: experienceError } = await supabaseClient
+                    .from('resume_experience')
+                    .select('*')
+                    .order('display_order', { ascending: true });
+
+                if (experienceError) throw experienceError;
+
+                const experienceContainer = document.getElementById('experience-list');
+                experienceContainer.innerHTML = experienceData.map(exp => `
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h4 class="font-medium text-gray-900">${exp.job_title}</h4>
+                                <p class="text-sm text-gray-600">${exp.company} • ${exp.duration}</p>
+                                ${exp.is_current ? '<span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Current</span>' : ''}
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="editExperience(${exp.id})" class="text-blue-600 hover:text-blue-800 text-sm">Edit</button>
+                                <button onclick="deleteExperience(${exp.id})" class="text-red-600 hover:text-red-800 text-sm">Delete</button>
+                            </div>
+                        </div>
+                        <p class="text-gray-700">${truncateText(exp.description)}</p>
+                    </div>
+                `).join('');
+
+                // Load skills
+                const { data: skillsData, error: skillsError } = await supabaseClient
+                    .from('resume_skills')
+                    .select('*')
+                    .order('display_order', { ascending: true });
+
+                if (skillsError) throw skillsError;
+
+                const skillsContainer = document.getElementById('skills-list-container');
+                skillsContainer.innerHTML = skillsData.map(skill => `
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h4 class="font-medium text-gray-900">${skill.category_name}</h4>
+                                <p class="text-sm text-gray-600">${skill.skill_list}</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="editSkills(${skill.id})" class="text-blue-600 hover:text-blue-800 text-sm">Edit</button>
+                                <button onclick="deleteSkills(${skill.id})" class="text-red-600 hover:text-red-800 text-sm">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Load education
+                const { data: educationData, error: educationError } = await supabaseClient
+                    .from('resume_education')
+                    .select('*')
+                    .order('display_order', { ascending: true });
+
+                if (educationError) throw educationError;
+
+                const educationContainer = document.getElementById('education-list-container');
+                educationContainer.innerHTML = educationData.map(edu => `
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h4 class="font-medium text-gray-900">${edu.degree}</h4>
+                                <p class="text-sm text-gray-600">${edu.institution} • ${edu.graduation_year || 'N/A'}</p>
+                                ${edu.location ? `<p class="text-xs text-gray-500">${edu.location}</p>` : ''}
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="editEducation(${edu.id})" class="text-blue-600 hover:text-blue-800 text-sm">Edit</button>
+                                <button onclick="deleteEducation(${edu.id})" class="text-red-600 hover:text-red-800 text-sm">Delete</button>
+                            </div>
+                        </div>
+                        ${edu.description ? `<p class="text-gray-700 text-sm">${truncateText(edu.description)}</p>` : ''}
+                    </div>
+                `).join('');
+
+                // Load achievements
+                const { data: achievementsData, error: achievementsError } = await supabaseClient
+                    .from('resume_achievements')
+                    .select('*')
+                    .order('display_order', { ascending: true });
+
+                if (achievementsError) throw achievementsError;
+
+                const achievementsContainer = document.getElementById('achievements-list-container');
+                achievementsContainer.innerHTML = achievementsData.map(achievement => `
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <p class="text-gray-700">${truncateText(achievement.achievement, 150)}</p>
+                                ${achievement.description ? `<p class="text-xs text-gray-500 mt-1">${truncateText(achievement.description)}</p>` : ''}
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="editAchievement(${achievement.id})" class="text-blue-600 hover:text-blue-800 text-sm">Edit</button>
+                                <button onclick="deleteAchievement(${achievement.id})" class="text-red-600 hover:text-red-800 text-sm">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading resume data:', error);
+            }
+        }
+
+        async function editExperience(id) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('resume_experience')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error) throw error;
+
+                editingExperienceId = id;
+                document.getElementById('experience-title').value = data.job_title;
+                document.getElementById('experience-company').value = data.company;
+                document.getElementById('experience-duration').value = data.duration;
+                document.getElementById('experience-location').value = data.location || '';
+                document.getElementById('experience-description').value = data.description;
+                document.getElementById('experience-achievements').value = data.achievements ? data.achievements.join('\n') : '';
+                document.getElementById('experience-order').value = data.display_order || 0;
+                document.getElementById('experience-current').checked = data.is_current || false;
+                document.getElementById('resume-experience-form').querySelector('button[type="submit"]').textContent = 'Update Experience';
+                document.getElementById('cancel-experience-btn').classList.remove('hidden');
+                
+                switchTab('resume');
+            } catch (error) {
+                console.error('Error loading experience for edit:', error);
+                alert('Error loading experience for edit');
+            }
+        }
+
+        async function deleteExperience(id) {
+            if (!confirm('Are you sure you want to delete this experience?')) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('resume_experience')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                alert('Experience deleted successfully!');
+                await loadResumeData();
+            } catch (error) {
+                console.error('Error deleting experience:', error);
+                alert('Error deleting experience');
+            }
+        }
+
+        function cancelExperienceEdit() {
+            editingExperienceId = null;
+            document.getElementById('resume-experience-form').reset();
+            document.getElementById('resume-experience-form').querySelector('button[type="submit"]').textContent = 'Add Experience';
+            document.getElementById('cancel-experience-btn').classList.add('hidden');
+        }
+
+        // Skills edit/delete functions
+        async function editSkills(id) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('resume_skills')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error) throw error;
+
+                editingSkillId = id;
+                document.getElementById('skills-category').value = data.category_name;
+                document.getElementById('skills-list').value = data.skill_list;
+                document.getElementById('skills-order').value = data.display_order || 0;
+                document.getElementById('resume-skills-form').querySelector('button[type="submit"]').textContent = 'Update Skills Category';
+                document.getElementById('cancel-skills-btn').classList.remove('hidden');
+                
+                switchTab('resume');
+            } catch (error) {
+                console.error('Error loading skills for edit:', error);
+                alert('Error loading skills for edit');
+            }
+        }
+
+        async function deleteSkills(id) {
+            if (!confirm('Are you sure you want to delete this skills category?')) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('resume_skills')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                alert('Skills category deleted successfully!');
+                await loadResumeData();
+            } catch (error) {
+                console.error('Error deleting skills:', error);
+                alert('Error deleting skills');
+            }
+        }
+
+        function cancelSkillsEdit() {
+            editingSkillId = null;
+            document.getElementById('resume-skills-form').reset();
+            document.getElementById('resume-skills-form').querySelector('button[type="submit"]').textContent = 'Add Skills Category';
+            document.getElementById('cancel-skills-btn').classList.add('hidden');
+        }
+
+        // Education edit/delete functions
+        async function editEducation(id) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('resume_education')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error) throw error;
+
+                editingEducationId = id;
+                document.getElementById('education-degree').value = data.degree;
+                document.getElementById('education-institution').value = data.institution;
+                document.getElementById('education-year').value = data.graduation_year || '';
+                document.getElementById('education-location').value = data.location || '';
+                document.getElementById('education-description').value = data.description || '';
+                document.getElementById('education-order').value = data.display_order || 0;
+                document.getElementById('resume-education-form').querySelector('button[type="submit"]').textContent = 'Update Education';
+                document.getElementById('cancel-education-btn').classList.remove('hidden');
+                
+                switchTab('resume');
+            } catch (error) {
+                console.error('Error loading education for edit:', error);
+                alert('Error loading education for edit');
+            }
+        }
+
+        async function deleteEducation(id) {
+            if (!confirm('Are you sure you want to delete this education entry?')) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('resume_education')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                alert('Education deleted successfully!');
+                await loadResumeData();
+            } catch (error) {
+                console.error('Error deleting education:', error);
+                alert('Error deleting education');
+            }
+        }
+
+        function cancelEducationEdit() {
+            editingEducationId = null;
+            document.getElementById('resume-education-form').reset();
+            document.getElementById('resume-education-form').querySelector('button[type="submit"]').textContent = 'Add Education';
+            document.getElementById('cancel-education-btn').classList.add('hidden');
+        }
+
+        // Achievements edit/delete functions
+        async function editAchievement(id) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('resume_achievements')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error) throw error;
+
+                editingAchievementId = id;
+                document.getElementById('achievement-text').value = data.achievement;
+                document.getElementById('achievement-description').value = data.description || '';
+                document.getElementById('achievement-order').value = data.display_order || 0;
+                document.getElementById('resume-achievements-form').querySelector('button[type="submit"]').textContent = 'Update Achievement';
+                document.getElementById('cancel-achievement-btn').classList.remove('hidden');
+                
+                switchTab('resume');
+            } catch (error) {
+                console.error('Error loading achievement for edit:', error);
+                alert('Error loading achievement for edit');
+            }
+        }
+
+        async function deleteAchievement(id) {
+            if (!confirm('Are you sure you want to delete this achievement?')) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('resume_achievements')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                alert('Achievement deleted successfully!');
+                await loadResumeData();
+            } catch (error) {
+                console.error('Error deleting achievement:', error);
+                alert('Error deleting achievement');
+            }
+        }
+
+        function cancelAchievementEdit() {
+            editingAchievementId = null;
+            document.getElementById('resume-achievements-form').reset();
+            document.getElementById('resume-achievements-form').querySelector('button[type="submit"]').textContent = 'Add Achievement';
+            document.getElementById('cancel-achievement-btn').classList.add('hidden');
+        }
+
+        // Index Page functions
+        async function handleIndexHeader(e) {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = 'Updating...';
+            submitBtn.disabled = true;
+            
+            try {
+                const headerData = {
+                    badge_text: document.getElementById('index-badge').value,
+                    main_heading: document.getElementById('index-heading').value,
+                    subheading: document.getElementById('index-subheading').value,
+                    location: document.getElementById('index-location').value,
+                    timezone: document.getElementById('index-timezone').value,
+                    availability_status: document.getElementById('index-availability').value
+                };
+
+                const { error } = await supabaseClient
+                    .from('index_content')
+                    .upsert({ id: 1, ...headerData });
+
+                if (error) throw error;
+
+                alert('Homepage header updated successfully!');
+                
+            } catch (error) {
+                console.error('Error updating index header:', error);
+                alert('Error: ' + error.message);
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        async function handleIndexAbout(e) {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = 'Updating...';
+            submitBtn.disabled = true;
+            
+            try {
+                const aboutData = {
+                    profile_summary: document.getElementById('index-profile-summary').value,
+                    projects_completed: document.getElementById('index-projects').value,
+                    happy_clients: document.getElementById('index-clients').value,
+                    years_experience: document.getElementById('index-experience').value,
+                    core_skills: document.getElementById('index-skills').value.split(',').map(s => s.trim()).filter(s => s).slice(0, 6)
+                };
+
+                const { error } = await supabaseClient
+                    .from('index_content')
+                    .upsert({ id: 1, ...aboutData });
+
+                if (error) throw error;
+
+                alert('About section updated successfully!');
+                
+            } catch (error) {
+                console.error('Error updating about section:', error);
+                alert('Error: ' + error.message);
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        async function handleIndexExperience(e) {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = 'Updating...';
+            submitBtn.disabled = true;
+            
+            try {
+                const checkboxes = document.querySelectorAll('#experience-selection input[type="checkbox"]:checked');
+                const featuredExperienceIds = Array.from(checkboxes).map(cb => parseInt(cb.value)).slice(0, 6);
+
+                const { error } = await supabaseClient
+                    .from('index_content')
+                    .upsert({ id: 1, featured_experience_ids: featuredExperienceIds });
+
+                if (error) throw error;
+
+                alert('Featured experience updated successfully!');
+                
+            } catch (error) {
+                console.error('Error updating featured experience:', error);
+                alert('Error: ' + error.message);
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        async function loadIndexData() {
+            try {
+                // Load index content
+                const { data: indexData, error: indexError } = await supabaseClient
+                    .from('index_content')
+                    .select('*')
+                    .eq('id', 1)
+                    .single();
+
+                if (indexData && !indexError) {
+                    // Load header data
+                    document.getElementById('index-badge').value = indexData.badge_text || '';
+                    document.getElementById('index-heading').value = indexData.main_heading || '';
+                    document.getElementById('index-subheading').value = indexData.subheading || '';
+                    document.getElementById('index-location').value = indexData.location || '';
+                    document.getElementById('index-timezone').value = indexData.timezone || '';
+                    document.getElementById('index-availability').value = indexData.availability_status || '';
+
+                    // Load about data
+                    document.getElementById('index-profile-summary').value = indexData.profile_summary || '';
+                    document.getElementById('index-projects').value = indexData.projects_completed || '';
+                    document.getElementById('index-clients').value = indexData.happy_clients || '';
+                    document.getElementById('index-experience').value = indexData.years_experience || '';
+                    document.getElementById('index-skills').value = 
+                        Array.isArray(indexData.core_skills) ? indexData.core_skills.join(', ') : (indexData.core_skills || '');
+                }
+
+                // Load experience checkboxes
+                const { data: experienceData, error: experienceError } = await supabaseClient
+                    .from('resume_experience')
+                    .select('*')
+                    .order('display_order', { ascending: true });
+
+                if (!experienceError && experienceData) {
+                    const container = document.getElementById('experience-selection');
+                    const featuredIds = indexData?.featured_experience_ids || [];
+                    
+                    container.innerHTML = experienceData.map(exp => `
+                        <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-50">
+                            <input type="checkbox" value="${exp.id}" 
+                                   ${featuredIds.includes(exp.id) ? 'checked' : ''}
+                                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm">
+                                <strong>${exp.job_title}</strong> at ${exp.company} (${exp.duration})
+                            </span>
+                        </label>
+                    `).join('');
+                }
+
+            } catch (error) {
+                console.error('Error loading index data:', error);
+                // Set default values if loading fails
+                document.getElementById('index-badge').value = 'Award-Winning Design Strategist';
+                document.getElementById('index-heading').value = 'Sean Sneed, Design Strategist';
+                document.getElementById('index-subheading').value = 'Crafting exceptional digital experiences through innovative design thinking and strategic brand storytelling. Based in San Francisco, working globally.';
+                document.getElementById('index-location').value = 'San Francisco, CA';
+                document.getElementById('index-timezone').value = 'PST (GMT-8)';
+                document.getElementById('index-availability').value = 'Available for Projects';
+                document.getElementById('index-profile-summary').value = "I'm Sean Sneed, a passionate Creative Director and Product Designer with over 8 years of experience transforming complex ideas into beautiful, functional digital experiences. Based in San Francisco, I work with startups and Fortune 500 companies to create meaningful connections between brands and their audiences through thoughtful design and strategic innovation.";
+                document.getElementById('index-projects').value = '150+';
+                document.getElementById('index-clients').value = '50+';
+                document.getElementById('index-experience').value = '8+';
+                document.getElementById('index-skills').value = 'Product Strategy, UX/UI Design, Design Systems, Brand Identity, Creative Direction, Prototyping';
+            }
+        }
+
+        // Load all data
+        async function loadAllData() {
+            await Promise.all([
+                loadSocialPosts(),
+                loadJournalEntries(),
+                loadIndexData(),
+                loadResumeData()
+            ]);
+        }
+
+        // Form event listeners
+        document.getElementById('social-form').addEventListener('submit', handleSocialPost);
+        document.getElementById('journal-form').addEventListener('submit', handleJournalEntry);
+        document.getElementById('index-header-form').addEventListener('submit', handleIndexHeader);
+        document.getElementById('index-about-form').addEventListener('submit', handleIndexAbout);
+        document.getElementById('index-experience-form').addEventListener('submit', handleIndexExperience);
+        document.getElementById('resume-header-form').addEventListener('submit', handleResumeHeader);
+        document.getElementById('resume-experience-form').addEventListener('submit', handleResumeExperience);
+        document.getElementById('resume-skills-form').addEventListener('submit', handleResumeSkills);
+        document.getElementById('resume-education-form').addEventListener('submit', handleResumeEducation);
+        document.getElementById('resume-achievements-form').addEventListener('submit', handleResumeAchievements);
+
+        // Post type change handler for social posts
+        document.querySelectorAll('input[name="postType"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const type = e.target.value;
+                
+                // Hide all conditional fields
+                document.getElementById('social-music-fields').classList.add('hidden');
+                document.getElementById('social-journal-fields').classList.add('hidden');
+                document.getElementById('social-album-art-field').classList.add('hidden');
+                
+                // Hide all metric fields first
+                document.getElementById('social-reposts-field').classList.add('hidden');
+                document.getElementById('social-replies-field').classList.add('hidden');
+                document.getElementById('social-comments-field').classList.add('hidden');
+                document.getElementById('social-shares-field').classList.add('hidden');
+                
+                // Show relevant fields based on platform
+                if (type === 'apple_music' || type === 'spotify') {
+                    document.getElementById('social-music-fields').classList.remove('hidden');
+                    document.getElementById('social-album-art-field').classList.remove('hidden');
+                } else if (type === 'journal') {
+                    document.getElementById('social-journal-fields').classList.remove('hidden');
+                } else if (type === 'bluesky') {
+                    document.getElementById('social-reposts-field').classList.remove('hidden');
+                    document.getElementById('social-replies-field').classList.remove('hidden');
+                } else if (type === 'instagram') {
+                    document.getElementById('social-comments-field').classList.remove('hidden');
+                } else if (type === 'linkedin') {
+                    document.getElementById('social-comments-field').classList.remove('hidden');
+                    document.getElementById('social-shares-field').classList.remove('hidden');
+                }
+            });
+        });
+
+        // Initialize
+        if (checkAuth()) {
+            showDashboard();
+            loadAllData();
+        } else {
+            showLogin();
+        }
+
+        // Refresh session on activity
+        document.addEventListener('click', () => {
+            if (checkAuth()) {
+                startSessionTimer();
+            }
+        });
+    </script>
+</body>
+</html> 

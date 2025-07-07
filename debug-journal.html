@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .log { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .error { background: #ffe6e6; border-left: 4px solid #ff0000; }
+        .success { background: #e6ffe6; border-left: 4px solid #00aa00; }
+        .info { background: #e6f3ff; border-left: 4px solid #0066cc; }
+        button { padding: 10px 20px; margin: 5px; background: #007cba; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #005a87; }
+    </style>
+</head>
+<body>
+    <h1>Journal Entries Debug</h1>
+    <p>This page tests the journal entries loading with the updated Supabase client.</p>
+    
+    <button onclick="testSupabaseClient()">Test Supabase Client</button>
+    <button onclick="testJournalManager()">Test Journal Manager</button>
+    <button onclick="clearLogs()">Clear Logs</button>
+    
+    <div id="logs"></div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="js/journal-entries-simple.js"></script>
+
+    <script>
+        function log(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log ${type}`;
+            logEntry.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            logs.appendChild(logEntry);
+            console.log(message);
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+        }
+
+        async function testSupabaseClient() {
+            log('🔧 Testing Supabase client initialization...', 'info');
+            
+            try {
+                const SUPABASE_URL = 'https://oujxbqzbgdsavuavkrep.supabase.co';
+                const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91anhicXpiZ2RzYXZ1YXZrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTg1NzAsImV4cCI6MjA2NjUzNDU3MH0.Sc7S82P08g6aKOfsuDzn9XmDoqfKyUZmoXj7p1_4MfM';
+                
+                if (typeof supabase === 'undefined') {
+                    log('❌ Supabase library not loaded', 'error');
+                    return;
+                }
+                
+                const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                log('✅ Supabase client created', 'success');
+                
+                // Test a simple query
+                const { data, error } = await supabaseClient
+                    .from('journal_entries')
+                    .select('*')
+                    .limit(3);
+                
+                if (error) {
+                    log(`❌ Supabase query error: ${error.message}`, 'error');
+                    log(`Error details: ${JSON.stringify(error, null, 2)}`, 'error');
+                } else {
+                    log(`✅ Supabase query successful! Found ${data.length} entries`, 'success');
+                    if (data.length > 0) {
+                        log(`Sample entry: ${JSON.stringify(data[0], null, 2)}`, 'info');
+                    }
+                }
+                
+            } catch (error) {
+                log(`❌ Supabase client test failed: ${error.message}`, 'error');
+                log(`Error details: ${JSON.stringify(error, null, 2)}`, 'error');
+            }
+        }
+
+        async function testJournalManager() {
+            log('🔧 Testing Journal Manager...', 'info');
+            
+            try {
+                // Create a test container
+                const testContainer = document.createElement('div');
+                testContainer.id = 'journal-entries-container';
+                document.body.appendChild(testContainer);
+                
+                // Initialize the manager
+                const manager = new SimpleJournalManager();
+                await manager.init();
+                
+                log(`✅ Journal Manager initialized. Entries loaded: ${manager.entries.length}`, 'success');
+                
+                if (manager.entries.length > 0) {
+                    log(`First entry title: ${manager.entries[0].title}`, 'info');
+                    log(`First entry styling: ${JSON.stringify(manager.entries[0].styling, null, 2)}`, 'info');
+                }
+                
+                // Clean up
+                document.body.removeChild(testContainer);
+                
+            } catch (error) {
+                log(`❌ Journal Manager test failed: ${error.message}`, 'error');
+                log(`Error details: ${JSON.stringify(error, null, 2)}`, 'error');
+            }
+        }
+
+        // Auto-run basic test on page load
+        window.addEventListener('load', () => {
+            log('🚀 Page loaded. Click buttons above to test.', 'info');
+        });
+    </script>
+</body>
+</html> 

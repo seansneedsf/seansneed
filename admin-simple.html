@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth antialiased">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal Admin - Sean Sneed</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100;200;300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .font-geist { font-family: 'Geist', sans-serif; }
+        .font-inter { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-neutral-900 text-white font-inter min-h-screen">
+    <!-- Login Screen -->
+    <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-neutral-800 rounded-lg border border-neutral-700 p-8 w-full max-w-md">
+            <div class="text-center mb-8">
+                <img src="/images/skater-logo.svg" alt="Sean Sneed" class="h-8 w-8 mx-auto mb-4">
+                <h1 class="text-2xl font-geist font-light text-white mb-2">Journal Admin</h1>
+                <p class="text-neutral-400 text-sm">Enter password to manage journal entries</p>
+            </div>
+            
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="password" class="block text-sm font-medium text-neutral-300 mb-2">Password</label>
+                    <input type="password" id="password" class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter admin password" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors">
+                    Login
+                </button>
+            </form>
+            
+            <div id="login-error" class="mt-4 text-red-400 text-sm text-center hidden">
+                Incorrect password. Please try again.
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="admin-panel" class="hidden min-h-screen">
+        <!-- Header -->
+        <header class="bg-neutral-800 border-b border-neutral-700 p-4">
+            <div class="max-w-6xl mx-auto flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <img src="/images/skater-logo.svg" alt="Sean Sneed" class="h-6 w-6">
+                    <h1 class="text-xl font-geist font-light">Journal Admin</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="journal.html" target="_blank" class="text-neutral-400 hover:text-white transition-colors text-sm">
+                        View Journal
+                    </a>
+                    <button id="logout-btn" class="text-neutral-400 hover:text-white transition-colors text-sm">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-4xl mx-auto p-6">
+            <!-- Add New Entry Form -->
+            <div class="bg-neutral-800 rounded-lg border border-neutral-700 p-6 mb-8">
+                <h2 class="text-lg font-geist font-light mb-6">Write New Journal Entry</h2>
+                
+                <form id="journal-form" class="space-y-6">
+                    <input type="hidden" id="entry-id" value="">
+                    
+                    <!-- Basic Info -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-300 mb-2">Title</label>
+                            <input type="text" id="entry-title" required class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Entry title">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-300 mb-2">Author/Company</label>
+                            <input type="text" id="entry-company" required class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Sean Sneed" value="Sean Sneed">
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-300 mb-2">Description (Preview)</label>
+                        <textarea id="entry-description" required rows="3" class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical" placeholder="Brief description that appears in the preview..."></textarea>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-300 mb-2">Full Content</label>
+                        <textarea id="entry-content" required rows="8" placeholder="Write your full journal entry here. Each paragraph will be automatically formatted." class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"></textarea>
+                        <p class="text-xs text-neutral-500 mt-1">Tip: Each line break will create a new paragraph</p>
+                    </div>
+                    
+                    <!-- Images -->
+                    <div>
+                        <label class="block text-sm font-medium text-neutral-300 mb-2">Images (optional)</label>
+                        <div class="border-2 border-dashed border-neutral-600 rounded-lg p-6 text-center">
+                            <input type="file" id="image-upload" accept="image/*" multiple class="hidden">
+                            <button type="button" id="upload-btn" class="px-4 py-2 bg-neutral-700 text-white rounded-md hover:bg-neutral-600 transition-colors">
+                                📷 Choose Images
+                            </button>
+                            <p class="text-xs text-neutral-500 mt-2">Upload images to include in your entry</p>
+                            <div id="image-preview" class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 hidden">
+                                <!-- Image previews will appear here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Meta Information -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-300 mb-2">Tags</label>
+                            <input type="text" id="entry-tags" placeholder="Design, Reflection, Innovation" class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <p class="text-xs text-neutral-500 mt-1">Separate with commas</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-300 mb-2">Theme</label>
+                            <select id="entry-style" class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="light">Light Theme</option>
+                                <option value="dark">Dark Theme</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-neutral-300 mb-2">Icon</label>
+                            <select id="entry-icon" class="w-full px-3 py-2 bg-neutral-700 border border-neutral-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="/images/icons/book_open_icon.svg">📖 Book</option>
+                                <option value="/images/icons/w_calandar_icon.svg">📅 Calendar</option>
+                                <option value="/images/icons/apple_icon.svg">🍎 Apple</option>
+                                <option value="/images/skater-logo.svg">🛹 Logo</option>
+                                <option value="">No Icon</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Options -->
+                    <div class="flex items-center gap-4">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="entry-featured" class="mr-2 bg-neutral-700 border-neutral-600 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm text-neutral-300">Featured Entry</span>
+                        </label>
+                    </div>
+                    
+                    <!-- Submit Buttons -->
+                    <div class="flex gap-4">
+                        <button type="submit" id="publish-btn" class="px-8 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors">
+                            🚀 Publish Entry
+                        </button>
+                        <button type="button" id="cancel-edit-btn" class="hidden px-6 py-3 bg-neutral-600 text-white font-medium rounded-lg hover:bg-neutral-700 transition-colors">
+                            Cancel Edit
+                        </button>
+                        <button type="reset" class="px-6 py-3 border border-neutral-600 text-neutral-300 font-medium rounded-lg hover:bg-neutral-700 transition-colors">
+                            Clear Form
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Recent Entries -->
+            <div class="bg-neutral-800 rounded-lg border border-neutral-700 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-geist font-light">Recent Entries</h2>
+                    <button id="refresh-entries-btn" class="px-4 py-2 bg-neutral-700 text-white rounded-md hover:bg-neutral-600 transition-colors text-sm">
+                        🔄 Refresh
+                    </button>
+                </div>
+                <div id="entries-list" class="space-y-4">
+                    <!-- Entries will be loaded here -->
+                    <div class="text-center py-8">
+                        <p class="text-neutral-400 text-sm">Loading entries...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        class JournalAdmin {
+            constructor() {
+                this.adminPassword = 'seansneed2025';
+                this.supabaseUrl = 'https://oujxbqzbgdsavuavkrep.supabase.co';
+                this.supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91anhicXpiZ2RzYXZ1YXZrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTg1NzAsImV4cCI6MjA2NjUzNDU3MH0.Sc7S82P08g6aKOfsuDzn9XmDoqfKyUZmoXj7p1_4MfM';
+                
+                this.currentEditId = null;
+                this.uploadedImages = [];
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupPasswordProtection();
+                this.setupEventListeners();
+                
+                // Check if already logged in
+                if (localStorage.getItem('journalAdminLoggedIn') === 'true') {
+                    this.showAdminPanel();
+                }
+            }
+            
+            setupPasswordProtection() {
+                const loginForm = document.getElementById('login-form');
+                const loginError = document.getElementById('login-error');
+                
+                loginForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const password = document.getElementById('password').value;
+                    
+                    if (password === this.adminPassword) {
+                        localStorage.setItem('journalAdminLoggedIn', 'true');
+                        this.showAdminPanel();
+                    } else {
+                        loginError.classList.remove('hidden');
+                        document.getElementById('password').value = '';
+                    }
+                });
+                
+                document.getElementById('logout-btn').addEventListener('click', () => {
+                    localStorage.removeItem('journalAdminLoggedIn');
+                    this.showLoginScreen();
+                });
+            }
+            
+            setupEventListeners() {
+                // Form submission
+                document.getElementById('journal-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.publishEntry();
+                });
+                
+                // Image upload
+                document.getElementById('upload-btn').addEventListener('click', () => {
+                    document.getElementById('image-upload').click();
+                });
+                
+                document.getElementById('image-upload').addEventListener('change', (e) => {
+                    this.handleImageUpload(e);
+                });
+                
+                // Cancel edit
+                document.getElementById('cancel-edit-btn').addEventListener('click', () => {
+                    this.cancelEdit();
+                });
+                
+                // Refresh entries
+                document.getElementById('refresh-entries-btn').addEventListener('click', () => {
+                    this.loadEntries();
+                });
+            }
+            
+            showLoginScreen() {
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('admin-panel').classList.add('hidden');
+            }
+
+            showAdminPanel() {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+                this.loadEntries();
+            }
+            
+            async loadEntries() {
+                try {
+                    const response = await fetch(`${this.supabaseUrl}/rest/v1/journal_entries?select=*&order=created_at.desc`, {
+                        headers: {
+                            'apikey': this.supabaseKey,
+                            'Authorization': `Bearer ${this.supabaseKey}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const entries = await response.json();
+                    this.renderEntriesList(entries);
+                } catch (error) {
+                    console.error('Error loading entries:', error);
+                    document.getElementById('entries-list').innerHTML = `
+                        <div class="text-center py-8">
+                            <p class="text-red-400 text-sm">Failed to load entries: ${error.message}</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            renderEntriesList(entries) {
+                const container = document.getElementById('entries-list');
+                
+                if (entries.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-8">
+                            <p class="text-neutral-400 text-sm">No entries found</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = entries.map(entry => `
+                    <div class="bg-neutral-700 rounded-lg p-4 border border-neutral-600">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-2">
+                                    ${entry.icon ? `<img src="${entry.icon}" alt="" class="w-4 h-4">` : ''}
+                                    <h4 class="font-medium text-white">${entry.title}</h4>
+                                    ${entry.featured ? '<span class="px-2 py-1 bg-yellow-600 text-yellow-100 text-xs rounded">Featured</span>' : ''}
+                                </div>
+                                <p class="text-sm text-neutral-300 mb-2">${entry.company} • ${entry.date_text || this.formatDate(entry.created_at)}</p>
+                                <p class="text-xs text-neutral-400 line-clamp-2">${entry.description}</p>
+                                <div class="flex flex-wrap gap-1 mt-2">
+                                    ${(entry.tags || []).slice(0, 3).map(tag => 
+                                        `<span class="px-2 py-1 bg-neutral-600 text-neutral-300 text-xs rounded">${tag}</span>`
+                                    ).join('')}
+                                    ${(entry.tags || []).length > 3 ? `<span class="text-xs text-neutral-500">+${entry.tags.length - 3} more</span>` : ''}
+                                </div>
+                            </div>
+                            <div class="flex gap-2 ml-4">
+                                <button onclick="admin.editEntry('${entry.id}')" class="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+                                    Edit
+                                </button>
+                                <button onclick="admin.deleteEntry('${entry.id}')" class="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            formatDate(dateString) {
+                return new Date(dateString).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+            }
+            
+            async editEntry(entryId) {
+                try {
+                    const response = await fetch(`${this.supabaseUrl}/rest/v1/journal_entries?id=eq.${entryId}`, {
+                        headers: {
+                            'apikey': this.supabaseKey,
+                            'Authorization': `Bearer ${this.supabaseKey}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const entries = await response.json();
+                    if (entries.length === 0) {
+                        throw new Error('Entry not found');
+                    }
+                    
+                    const entry = entries[0];
+                    this.populateForm(entry);
+                    this.currentEditId = entryId;
+                    
+                    // Update UI for editing mode
+                    document.getElementById('publish-btn').innerHTML = '💾 Update Entry';
+                    document.getElementById('cancel-edit-btn').classList.remove('hidden');
+                    
+                    // Scroll to form
+                    document.querySelector('#journal-form').scrollIntoView({ behavior: 'smooth' });
+                    
+                } catch (error) {
+                    console.error('Error loading entry for edit:', error);
+                    alert('Error loading entry: ' + error.message);
+                }
+            }
+            
+            populateForm(entry) {
+                document.getElementById('entry-id').value = entry.id;
+                document.getElementById('entry-title').value = entry.title;
+                document.getElementById('entry-company').value = entry.company;
+                document.getElementById('entry-description').value = entry.description;
+                document.getElementById('entry-content').value = Array.isArray(entry.full_content) ? entry.full_content.join('\n') : entry.full_content;
+                document.getElementById('entry-tags').value = (entry.tags || []).join(', ');
+                document.getElementById('entry-icon').value = entry.icon || '';
+                document.getElementById('entry-style').value = entry.styling?.backgroundColor === 'bg-neutral-900' ? 'dark' : 'light';
+                document.getElementById('entry-featured').checked = entry.featured || false;
+                
+                // Load existing images if any
+                this.uploadedImages = [];
+                if (entry.images && Array.isArray(entry.images)) {
+                    this.uploadedImages = entry.images.map(img => ({
+                        name: img.name || 'image',
+                        dataUrl: img.data || img.dataUrl,
+                        file: null
+                    }));
+                    this.updateImagePreview();
+                }
+            }
+            
+            cancelEdit() {
+                this.currentEditId = null;
+                document.getElementById('publish-btn').innerHTML = '🚀 Publish Entry';
+                document.getElementById('cancel-edit-btn').classList.add('hidden');
+                document.getElementById('journal-form').reset();
+                this.clearImagePreviews();
+            }
+            
+            async deleteEntry(entryId) {
+                if (!confirm('Are you sure you want to delete this entry? This action cannot be undone.')) {
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`${this.supabaseUrl}/rest/v1/journal_entries?id=eq.${entryId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'apikey': this.supabaseKey,
+                            'Authorization': `Bearer ${this.supabaseKey}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    alert('Entry deleted successfully');
+                    this.loadEntries();
+                    
+                } catch (error) {
+                    console.error('Error deleting entry:', error);
+                    alert('Failed to delete entry: ' + error.message);
+                }
+            }
+            
+            handleImageUpload(event) {
+                const files = Array.from(event.target.files);
+                
+                files.forEach(file => {
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const imageData = {
+                                file: file,
+                                dataUrl: e.target.result,
+                                name: file.name
+                            };
+                            
+                            this.uploadedImages.push(imageData);
+                            this.updateImagePreview();
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+            
+            updateImagePreview() {
+                const previewContainer = document.getElementById('image-preview');
+                
+                if (this.uploadedImages.length === 0) {
+                    previewContainer.classList.add('hidden');
+                    return;
+                }
+                
+                previewContainer.classList.remove('hidden');
+                previewContainer.innerHTML = this.uploadedImages.map((img, index) => `
+                    <div class="relative">
+                        <img src="${img.dataUrl}" alt="${img.name}" class="w-full h-20 object-cover rounded border border-neutral-600">
+                        <button type="button" onclick="admin.removeImage(${index})" class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs hover:bg-red-600 transition-colors">
+                            ×
+                        </button>
+                        <p class="text-xs text-neutral-400 mt-1 truncate">${img.name}</p>
+                    </div>
+                `).join('');
+            }
+            
+            removeImage(index) {
+                this.uploadedImages.splice(index, 1);
+                this.updateImagePreview();
+            }
+            
+            clearImagePreviews() {
+                this.uploadedImages = [];
+                this.updateImagePreview();
+                document.getElementById('image-upload').value = '';
+            }
+            
+            async publishEntry() {
+                const publishBtn = document.getElementById('publish-btn');
+                const originalText = publishBtn.innerHTML;
+                const isEditing = this.currentEditId !== null;
+                
+                publishBtn.innerHTML = isEditing ? '🔄 Updating...' : '🔄 Publishing...';
+                publishBtn.disabled = true;
+                
+                try {
+                    const formData = this.getFormData();
+                    const entryData = this.createEntryObject(formData);
+                    
+                    let response;
+                    if (isEditing) {
+                        response = await fetch(`${this.supabaseUrl}/rest/v1/journal_entries?id=eq.${this.currentEditId}`, {
+                            method: 'PATCH',
+                            headers: {
+                                'apikey': this.supabaseKey,
+                                'Authorization': `Bearer ${this.supabaseKey}`,
+                                'Content-Type': 'application/json',
+                                'Prefer': 'return=representation'
+                            },
+                            body: JSON.stringify(entryData)
+                        });
+                    } else {
+                        response = await fetch(`${this.supabaseUrl}/rest/v1/journal_entries`, {
+                            method: 'POST',
+                            headers: {
+                                'apikey': this.supabaseKey,
+                                'Authorization': `Bearer ${this.supabaseKey}`,
+                                'Content-Type': 'application/json',
+                                'Prefer': 'return=representation'
+                            },
+                            body: JSON.stringify(entryData)
+                        });
+                    }
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    publishBtn.innerHTML = isEditing ? '✅ Updated!' : '✅ Published!';
+                    alert(isEditing ? 'Entry updated successfully!' : 'Entry published successfully!');
+                    
+                    if (isEditing) {
+                        this.cancelEdit();
+                    } else {
+                        document.getElementById('journal-form').reset();
+                        this.clearImagePreviews();
+                    }
+                    
+                    this.loadEntries();
+                    
+                } catch (error) {
+                    console.error('Publish error:', error);
+                    publishBtn.innerHTML = isEditing ? '❌ Update Failed' : '❌ Publish Failed';
+                    alert(`Failed to ${isEditing ? 'update' : 'publish'} entry: ` + error.message);
+                } finally {
+                    setTimeout(() => {
+                        publishBtn.innerHTML = originalText;
+                        publishBtn.disabled = false;
+                    }, 3000);
+                }
+            }
+            
+            getFormData() {
+                return {
+                    title: document.getElementById('entry-title').value,
+                    company: document.getElementById('entry-company').value,
+                    description: document.getElementById('entry-description').value,
+                    content: document.getElementById('entry-content').value,
+                    tags: document.getElementById('entry-tags').value,
+                    icon: document.getElementById('entry-icon').value,
+                    style: document.getElementById('entry-style').value,
+                    featured: document.getElementById('entry-featured').checked
+                };
+            }
+            
+            createEntryObject(formData) {
+                const contentArray = formData.content.split('\n').filter(line => line.trim());
+                const tagsArray = formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
+                
+                const styling = formData.style === 'dark' ? {
+                    backgroundColor: "bg-neutral-900",
+                    borderColor: "border-neutral-700",
+                    titleColor: "text-neutral-100",
+                    companyColor: "text-neutral-200",
+                    descriptionColor: "text-neutral-400",
+                    dateColor: "text-neutral-400"
+                } : {
+                    backgroundColor: "bg-neutral-50",
+                    borderColor: "border-neutral-200",
+                    titleColor: "text-neutral-900",
+                    companyColor: "text-neutral-900",
+                    descriptionColor: "text-neutral-600",
+                    dateColor: "text-neutral-400"
+                };
+                
+                const images = this.uploadedImages.map(img => ({
+                    name: img.name,
+                    data: img.dataUrl,
+                    type: img.file ? img.file.type : 'image/jpeg'
+                }));
+                
+                return {
+                    title: formData.title,
+                    company: formData.company,
+                    description: formData.description,
+                    full_content: contentArray,
+                    tags: tagsArray,
+                    icon: formData.icon || "/images/icons/book_open_icon.svg",
+                    styling: styling,
+                    featured: formData.featured,
+                    images: images,
+                    date_text: new Date().toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    })
+                };
+            }
+        }
+        
+        // Initialize admin interface
+        const admin = new JournalAdmin();
+        
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html> 
