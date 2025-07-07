@@ -243,14 +243,12 @@
         </main>
     </div>
 
+    <!-- Load configuration first -->
+    <script src="js/config.js"></script>
+    
     <script>
-        // Simple password protection
-        const ADMIN_PASSWORD = 'seansneed2025'; // Change this to your desired password
-        
-        // Initialize Supabase
-        const SUPABASE_URL = 'https://oujxbqzbgdsavuavkrep.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91anhicXpiZ2RzYXZ1YXZrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTg1NzAsImV4cCI6MjA2NjUzNDU3MH0.Sc7S82P08g6aKOfsuDzn9XmDoqfKyUZmoXj7p1_4MfM';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Initialize Supabase with centralized configuration
+        const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         
         // DOM elements
         const loginScreen = document.getElementById('login-screen');
@@ -272,7 +270,7 @@
             e.preventDefault();
             const password = document.getElementById('password').value;
             
-            if (password === ADMIN_PASSWORD) {
+            if (password === CONFIG.ADMIN_PASSWORD) {
                 localStorage.setItem('socialAdminLoggedIn', 'true');
                 showAdminPanel();
             } else {

@@ -19,11 +19,14 @@ class SimpleJournalManager {
      * Initialize Supabase client
      */
     initSupabase() {
-        const SUPABASE_URL = 'https://oujxbqzbgdsavuavkrep.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91anhicXpiZ2RzYXZ1YXZrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTg1NzAsImV4cCI6MjA2NjUzNDU3MH0.Sc7S82P08g6aKOfsuDzn9XmDoqfKyUZmoXj7p1_4MfM';
+        // Use centralized configuration
+        if (typeof CONFIG === 'undefined') {
+            console.error('CONFIG not loaded. Make sure to include js/config.js before this script.');
+            return;
+        }
         
         if (typeof supabase !== 'undefined') {
-            this.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            this.supabase = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
             console.log('✅ Supabase client initialized');
         } else {
             console.warn('⚠️ Supabase not loaded, falling back to fetch requests');
@@ -58,11 +61,11 @@ class SimpleJournalManager {
         } else {
             // Fallback to fetch request
             try {
-                const response = await fetch('https://oujxbqzbgdsavuavkrep.supabase.co/rest/v1/journal_entries?limit=1', {
+                const response = await fetch(CONFIG.getSupabaseUrl(CONFIG.JOURNAL_ENDPOINT + '?limit=1'), {
                     method: 'HEAD',
                     headers: {
-                        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91anhicXpiZ2RzYXZ1YXZrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTg1NzAsImV4cCI6MjA2NjUzNDU3MH0.Sc7S82P08g6aKOfsuDzn9XmDoqfKyUZmoXj7p1_4MfM',
-                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91anhicXpiZ2RzYXZ1YXZrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTg1NzAsImV4cCI6MjA2NjUzNDU3MH0.Sc7S82P08g6aKOfsuDzn9XmDoqfKyUZmoXj7p1_4MfM'
+                        'apikey': CONFIG.SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}`
                     }
                 });
                 console.log('🔗 Fallback connection test status:', response.status);
@@ -195,10 +198,10 @@ class SimpleJournalManager {
         } else {
             // Fallback to fetch request
             try {
-                const response = await fetch('https://oujxbqzbgdsavuavkrep.supabase.co/rest/v1/journal_entries?select=*&order=created_at.desc', {
+                const response = await fetch(CONFIG.getSupabaseUrl(CONFIG.JOURNAL_ENDPOINT + '?select=*&order=created_at.desc'), {
                     headers: {
-                        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91anhicXpiZ2RzYXZ1YXZrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTg1NzAsImV4cCI6MjA2NjUzNDU3MH0.Sc7S82P08g6aKOfsuDzn9XmDoqfKyUZmoXj7p1_4MfM',
-                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91anhicXpiZ2RzYXZ1YXZrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTg1NzAsImV4cCI6MjA2NjUzNDU3MH0.Sc7S82P08g6aKOfsuDzn9XmDoqfKyUZmoXj7p1_4MfM',
+                        'apikey': CONFIG.SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}`,
                         'Content-Type': 'application/json'
                     }
                 });
@@ -301,11 +304,11 @@ class SimpleJournalManager {
                 return data[0];
             } else {
                 // Fallback to fetch request
-                const response = await fetch('https://oujxbqzbgdsavuavkrep.supabase.co/rest/v1/journal_entries', {
+                const response = await fetch(CONFIG.getSupabaseUrl(CONFIG.JOURNAL_ENDPOINT), {
                     method: 'POST',
                     headers: {
-                        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91anhicXpiZ2RzYXZ1YXZrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTg1NzAsImV4cCI6MjA2NjUzNDU3MH0.Sc7S82P08g6aKOfsuDzn9XmDoqfKyUZmoXj7p1_4MfM',
-                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91anhicXpiZ2RzYXZ1YXZrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTg1NzAsImV4cCI6MjA2NjUzNDU3MH0.Sc7S82P08g6aKOfsuDzn9XmDoqfKyUZmoXj7p1_4MfM',
+                        'apikey': CONFIG.SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${CONFIG.SUPABASE_ANON_KEY}`,
                         'Content-Type': 'application/json',
                         'Prefer': 'return=representation'
                     },

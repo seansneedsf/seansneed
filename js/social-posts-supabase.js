@@ -18,12 +18,14 @@ class SocialPostsManagerSupabase {
      * Initialize Supabase client
      */
     initSupabase() {
-        // Use the same Supabase project as your journal entries
-        const SUPABASE_URL = 'https://oujxbqzbgdsavuavkrep.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91anhicXpiZ2RzYXZ1YXZrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTg1NzAsImV4cCI6MjA2NjUzNDU3MH0.Sc7S82P08g6aKOfsuDzn9XmDoqfKyUZmoXj7p1_4MfM';
+        // Use centralized configuration
+        if (typeof CONFIG === 'undefined') {
+            console.error('CONFIG not loaded. Make sure to include js/config.js before this script.');
+            return;
+        }
         
         if (typeof supabase !== 'undefined') {
-            this.supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            this.supabase = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
         } else {
             console.warn('Supabase not loaded, falling back to localStorage');
         }

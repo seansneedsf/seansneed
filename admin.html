@@ -614,17 +614,17 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Load configuration -->
+<script src="js/config.js"></script>
     <script>
         // Security configuration
         const ADMIN_PASSWORD = 'seansneed2025';
         const SESSION_TIMEOUT = 3600000; // 1 hour
         let sessionTimer;
 
-        // Supabase configuration
-        const SUPABASE_URL = 'https://oujxbqzbgdsavuavkrep.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91anhicXpiZ2RzYXZ1YXZrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTg1NzAsImV4cCI6MjA2NjUzNDU3MH0.Sc7S82P08g6aKOfsuDzn9XmDoqfKyUZmoXj7p1_4MfM';
+        // Initialize Supabase with centralized configuration
         const { createClient } = supabase;
-        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 
         // Global variables for edit modes
         let editingSocialPostId = null;
@@ -636,7 +636,7 @@
 
         // Security functions
         function checkPassword(password) {
-            return password === ADMIN_PASSWORD;
+            return password === CONFIG.ADMIN_PASSWORD;
         }
 
         function startSession() {

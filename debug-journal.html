@@ -25,6 +25,8 @@
     <div id="logs"></div>
 
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <!-- Load configuration first -->
+    <script src="js/config.js"></script>
     <script src="js/journal-entries-simple.js"></script>
 
     <script>
@@ -45,15 +47,17 @@
             log('🔧 Testing Supabase client initialization...', 'info');
             
             try {
-                const SUPABASE_URL = 'https://oujxbqzbgdsavuavkrep.supabase.co';
-                const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91anhicXpiZ2RzYXZ1YXZrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTg1NzAsImV4cCI6MjA2NjUzNDU3MH0.Sc7S82P08g6aKOfsuDzn9XmDoqfKyUZmoXj7p1_4MfM';
-                
                 if (typeof supabase === 'undefined') {
                     log('❌ Supabase library not loaded', 'error');
                     return;
                 }
                 
-                const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                if (typeof CONFIG === 'undefined') {
+                    log('❌ Configuration not loaded', 'error');
+                    return;
+                }
+                
+                const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
                 log('✅ Supabase client created', 'success');
                 
                 // Test a simple query

@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sean Sneed - Strategic Business Professional</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<!-- Load configuration -->
+<script src="js/config.js"></script>
     <style>
         * {
             margin: 0;
@@ -284,8 +286,13 @@
         // Resume Data Manager
         class ResumeManager {
             constructor() {
-                this.supabaseUrl = 'https://oujxbqzbgdsavuavkrep.supabase.co';
-                this.supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91anhicXpiZ2RzYXZ1YXZrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTg1NzAsImV4cCI6MjA2NjUzNDU3MH0.Sc7S82P08g6aKOfsuDzn9XmDoqfKyUZmoXj7p1_4MfM';
+                if (typeof CONFIG !== 'undefined') {
+                    this.supabaseUrl = CONFIG.SUPABASE_URL;
+                    this.supabaseKey = CONFIG.SUPABASE_ANON_KEY;
+                } else {
+                    console.error('Configuration not loaded');
+                    return;
+                }
                 
                 if (typeof supabase !== 'undefined') {
                     this.supabase = supabase.createClient(this.supabaseUrl, this.supabaseKey);
