@@ -23,36 +23,38 @@ A modern social media feed system with Supabase integration, featuring dynamic m
    - Create a bucket named `album-art` (for music post artwork)
    - Make both buckets public
 
-### 2. Configure API Keys
+### 2. Configure Application Settings
 
-Update the following files with your Supabase credentials:
+All configuration is now centralized in `js/config.js`. Update this single file with your settings:
 
-**In `js/social-posts-supabase.js`:**
+**In `js/config.js`:**
 ```javascript
-const SUPABASE_URL = 'https://your-project-id.supabase.co';
-const SUPABASE_ANON_KEY = 'your-anon-key-here';
+const CONFIG = {
+    // Supabase Settings
+    SUPABASE_URL: 'https://your-project-id.supabase.co',
+    SUPABASE_ANON_KEY: 'your-anon-key-here',
+    
+    // Admin Settings
+    ADMIN_PASSWORD: 'your-secure-password',
+    
+    // API Endpoints and other settings are pre-configured
+};
 ```
 
-**In `social-admin.html`:**
-```javascript
-const SUPABASE_URL = 'https://your-project-id.supabase.co';
-const SUPABASE_ANON_KEY = 'your-anon-key-here';
-```
+**Benefits of centralized configuration:**
+- Single source of truth for all settings
+- Easy to update credentials across all pages
+- Better security for production deployments
+- Simplified maintenance
 
-### 3. Admin Password
-
-Change the admin password in `social-admin.html`:
-```javascript
-const ADMIN_PASSWORD = 'your-secure-password';
-```
-
-### 4. File Structure
+### 3. File Structure
 
 ```
 seansneed/
 ├── social.html              # Main social feed page
 ├── social-admin.html        # Admin interface
 ├── js/
+│   ├── config.js            # Centralized configuration
 │   ├── social-posts-supabase.js  # Supabase-powered social manager
 │   └── social-posts.js      # Legacy localStorage version
 ├── setup-supabase.sql       # Database setup script

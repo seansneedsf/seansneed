@@ -8,7 +8,7 @@ const CONFIG = {
     SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91anhicXpiZ2RzYXZ1YXZrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTg1NzAsImV4cCI6MjA2NjUzNDU3MH0.Sc7S82P08g6aKO', // Truncated for security
     
     // Admin Settings
-    ADMIN_PASSWORD: 'your-admin-password-here', // Change this to your actual admin password
+    ADMIN_PASSWORD: 'seansneed2025', // Change this to your actual admin password
     
     // API Endpoints
     JOURNAL_ENDPOINT: '/rest/v1/journal_entries',
