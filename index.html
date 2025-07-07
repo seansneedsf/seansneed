@@ -122,8 +122,8 @@
 
 <body class="bg-stone-100 text-neutral-900 selection:bg-neutral-200 relative overflow-x-hidden font-inter">
     <!-- Navigation -->
-    <div
-        class="bg-neutral-900 border border-neutral-700 shadow-lg shadow-black/50 backdrop-blur-sm sticky top-0 z-50 animate-fade-in-up">
+    <div class="bg-neutral-900 border border-neutral-700 shadow-lg shadow-black/50 backdrop-blur-sm sticky top-0 z-50 animate-fade-in-up">
+        <!-- Main Navigation Bar -->
         <div class="mx-auto max-w-6xl px-6 lg:px-8">
             <div class="flex h-16 items-center justify-between">
                 <!-- Left: Logo and Name -->
@@ -135,7 +135,7 @@
                     </a>
                 </div>
 
-                <!-- Center: Navigation Items -->
+                <!-- Center: Desktop Navigation Items -->
                 <nav class="hidden lg:flex gap-8 text-sm absolute left-1/2 transform -translate-x-1/2">
                     <a href="social.html" class="text-neutral-300 hover:text-neutral-600 transition-colors">Social</a>
                     <a href="journal.html" class="text-neutral-300 hover:text-neutral-600 transition-colors">Journal</a>
@@ -152,6 +152,17 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Navigation Sub-bar -->
+        <div class="lg:hidden border-t border-neutral-700">
+            <div class="mx-auto max-w-6xl px-6">
+                <nav class="flex justify-center gap-8 py-3">
+                    <a href="social.html" class="text-neutral-300 hover:text-neutral-100 transition-colors text-sm font-medium">Social</a>
+                    <a href="journal.html" class="text-neutral-300 hover:text-neutral-100 transition-colors text-sm font-medium">Journal</a>
+                    <a href="contact.html" class="text-neutral-300 hover:text-neutral-100 transition-colors text-sm font-medium">Contact</a>
+                </nav>
             </div>
         </div>
     </div>
