@@ -1,0 +1,28 @@
+User-agent: *
+Allow: /
+
+# Allow access to main pages
+Allow: /index.html
+Allow: /social.html
+Allow: /journal.html
+Allow: /contact.html
+Allow: /resume.html
+
+# Allow access to assets
+Allow: /images/
+Allow: /js/
+Allow: /css/
+
+# Disallow admin areas
+Disallow: /admin.html
+Disallow: /admin-simple.html
+Disallow: /social-admin.html
+Disallow: /test-connection.html
+Disallow: /debug-journal.html
+
+# Disallow sensitive files
+Disallow: /*.sql
+Disallow: /js/config.js
+
+# Sitemap location
+Sitemap: https://seansneed.com/sitemap.xml 

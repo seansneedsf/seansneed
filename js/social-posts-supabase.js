@@ -55,23 +55,37 @@ class SocialPostsManagerSupabase {
      * Load posts from Supabase or localStorage fallback
      */
     async loadPosts() {
+        console.log('=== LOADING POSTS DEBUG ===');
+        console.log('Supabase client exists:', !!this.supabase);
+        
         if (this.supabase) {
             try {
+                console.log('Querying Supabase...');
                 const { data, error } = await this.supabase
                     .from('social_posts')
                     .select('*')
                     .order('created_at', { ascending: false });
 
-                if (error) throw error;
+                console.log('Supabase response:', { data, error });
+                console.log('Number of rows returned:', data ? data.length : 0);
+
+                if (error) {
+                    console.error('Supabase error:', error);
+                    throw error;
+                }
                 
                 // Transform Supabase data to match our format
                 this.posts = data.map(post => this.transformSupabasePost(post));
                 
-                console.log('Loaded social posts from Supabase:', this.posts.length);
+                console.log('Transformed posts:', this.posts.length);
+                console.log('First post (if any):', this.posts[0]);
                 return;
             } catch (error) {
                 console.error('Error loading from Supabase:', error);
+                console.log('Falling back to localStorage...');
             }
+        } else {
+            console.log('No Supabase client, using localStorage...');
         }
         
         // Fallback to localStorage

@@ -51,6 +51,9 @@
                 <button onclick="switchTab('social')" class="tab-btn flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors bg-white text-gray-900 shadow-sm">
                     Social Posts
                 </button>
+                <button onclick="switchTab('stats')" class="tab-btn flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors text-gray-600 hover:text-gray-900">
+                    Social Stats
+                </button>
                 <button onclick="switchTab('journal')" class="tab-btn flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors text-gray-600 hover:text-gray-900">
                     Journal Entries
                 </button>
@@ -235,6 +238,85 @@
                     <h3 class="text-lg font-semibold mb-4">Recent Posts</h3>
                     <div id="social-posts-list" class="space-y-4">
                         <!-- Posts will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social Stats Tab -->
+            <div id="stats-tab" class="tab-content">
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                    <h2 class="text-lg font-semibold mb-4">Manage Social Media Statistics</h2>
+                    <form id="stats-form" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div>
+                                <label for="stats-platform" class="block text-sm font-medium text-gray-700 mb-2">Platform</label>
+                                <select id="stats-platform" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Select Platform</option>
+                                    <option value="bluesky">Bluesky</option>
+                                    <option value="instagram">Instagram</option>
+                                    <option value="linkedin">LinkedIn</option>
+                                    <option value="twitter">Twitter</option>
+                                    <option value="facebook">Facebook</option>
+                                    <option value="total">Total Reach</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="stats-platform-name" class="block text-sm font-medium text-gray-700 mb-2">Display Name</label>
+                                <input type="text" id="stats-platform-name" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Bluesky">
+                            </div>
+                            <div>
+                                <label for="stats-follower-count" class="block text-sm font-medium text-gray-700 mb-2">Follower Count</label>
+                                <input type="number" id="stats-follower-count" required min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="2100">
+                            </div>
+                            <div>
+                                <label for="stats-display-count" class="block text-sm font-medium text-gray-700 mb-2">Display Count</label>
+                                <input type="text" id="stats-display-count" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="2.1K">
+                            </div>
+                            <div>
+                                <label for="stats-platform-color" class="block text-sm font-medium text-gray-700 mb-2">Platform Color Class</label>
+                                <input type="text" id="stats-platform-color" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="bg-[rgb(0,133,255)]">
+                            </div>
+                            <div>
+                                <label for="stats-platform-gradient" class="block text-sm font-medium text-gray-700 mb-2">Platform Gradient (optional)</label>
+                                <input type="text" id="stats-platform-gradient" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="bg-gradient-to-r from-orange-500 to-pink-500">
+                            </div>
+                            <div>
+                                <label for="stats-text-color" class="block text-sm font-medium text-gray-700 mb-2">Text Color Class</label>
+                                <input type="text" id="stats-text-color" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="text-blue-200">
+                            </div>
+                            <div>
+                                <label for="stats-platform-url" class="block text-sm font-medium text-gray-700 mb-2">Profile URL (optional)</label>
+                                <input type="url" id="stats-platform-url" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="https://...">
+                            </div>
+                            <div>
+                                <label for="stats-display-order" class="block text-sm font-medium text-gray-700 mb-2">Display Order</label>
+                                <input type="number" id="stats-display-order" required min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="1">
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center gap-4">
+                            <label class="flex items-center">
+                                <input type="checkbox" id="stats-is-active" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <span class="ml-2 text-sm text-gray-700">Active (visible on site)</span>
+                            </label>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+                                Save Social Stat
+                            </button>
+                            <button type="button" onclick="cancelStatsEdit()" class="bg-gray-400 text-white py-2 px-4 rounded-md hover:bg-gray-500 transition-colors hidden" id="cancel-stats-btn">
+                                Cancel Edit
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Social Stats List -->
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h3 class="text-lg font-semibold mb-4">Current Social Statistics</h3>
+                    <div id="stats-list" class="space-y-4">
+                        <!-- Stats will be loaded here -->
                     </div>
                 </div>
             </div>
@@ -2016,18 +2098,206 @@
             }
         }
 
+        // Social Stats Management
+        let editingStatsId = null;
+
+        async function handleSocialStats(e) {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = 'Saving...';
+            submitBtn.disabled = true;
+            
+            try {
+                const statsData = {
+                    platform: document.getElementById('stats-platform').value,
+                    platform_name: document.getElementById('stats-platform-name').value,
+                    follower_count: parseInt(document.getElementById('stats-follower-count').value),
+                    display_count: document.getElementById('stats-display-count').value,
+                    platform_color: document.getElementById('stats-platform-color').value || 'bg-neutral-800',
+                    platform_gradient: document.getElementById('stats-platform-gradient').value || null,
+                    text_color: document.getElementById('stats-text-color').value,
+                    platform_url: document.getElementById('stats-platform-url').value || null,
+                    is_active: document.getElementById('stats-is-active').checked,
+                    display_order: parseInt(document.getElementById('stats-display-order').value)
+                };
+
+                if (editingStatsId) {
+                    // Update existing stat
+                    const { error } = await supabaseClient
+                        .from('social_stats')
+                        .update(statsData)
+                        .eq('id', editingStatsId);
+
+                    if (error) throw error;
+                    alert('Social stat updated successfully!');
+                    cancelStatsEdit();
+                } else {
+                    // Create new stat
+                    const { error } = await supabaseClient
+                        .from('social_stats')
+                        .insert([statsData]);
+
+                    if (error) throw error;
+                    alert('Social stat created successfully!');
+                }
+
+                document.getElementById('stats-form').reset();
+                document.getElementById('stats-is-active').checked = true; // Reset to default
+                await loadSocialStats();
+                
+            } catch (error) {
+                console.error('Error saving social stat:', error);
+                alert('Error: ' + error.message);
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        async function loadSocialStats() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('social_stats')
+                    .select('*')
+                    .order('display_order', { ascending: true });
+
+                if (error) throw error;
+
+                const container = document.getElementById('stats-list');
+                if (data.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 text-center py-8">No social stats yet</p>';
+                    return;
+                }
+
+                container.innerHTML = data.map(stat => {
+                    const backgroundClass = stat.platform_gradient || stat.platform_color;
+                    const statusBadge = stat.is_active 
+                        ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>'
+                        : '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Inactive</span>';
+                    
+                    return `
+                        <div class="border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="text-center p-3 rounded-lg ${backgroundClass} min-w-[80px]">
+                                    <div class="text-lg font-semibold text-white">${stat.display_count}</div>
+                                    <div class="text-xs ${stat.text_color}">${stat.platform_name}</div>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">${stat.platform_name}</h4>
+                                    <p class="text-sm text-gray-500">${stat.follower_count.toLocaleString()} followers</p>
+                                    <p class="text-xs text-gray-400">Order: ${stat.display_order}</p>
+                                </div>
+                                <div>
+                                    ${statusBadge}
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="editSocialStat(${stat.id})" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                    Edit
+                                </button>
+                                <button onclick="deleteSocialStat(${stat.id})" class="text-red-600 hover:text-red-800 text-sm font-medium">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading social stats:', error);
+                document.getElementById('stats-list').innerHTML = '<p class="text-red-500 text-center py-8">Error loading social stats</p>';
+            }
+        }
+
+        async function editSocialStat(id) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('social_stats')
+                    .select('*')
+                    .eq('id', id)
+                    .single();
+
+                if (error) throw error;
+
+                editingStatsId = id;
+                
+                // Fill form with existing data
+                document.getElementById('stats-platform').value = data.platform;
+                document.getElementById('stats-platform-name').value = data.platform_name;
+                document.getElementById('stats-follower-count').value = data.follower_count;
+                document.getElementById('stats-display-count').value = data.display_count;
+                document.getElementById('stats-platform-color').value = data.platform_color || '';
+                document.getElementById('stats-platform-gradient').value = data.platform_gradient || '';
+                document.getElementById('stats-text-color').value = data.text_color;
+                document.getElementById('stats-platform-url').value = data.platform_url || '';
+                document.getElementById('stats-is-active').checked = data.is_active;
+                document.getElementById('stats-display-order').value = data.display_order;
+
+                // Update form UI
+                const submitBtn = document.getElementById('stats-form').querySelector('button[type="submit"]');
+                submitBtn.textContent = 'Update Social Stat';
+                submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                submitBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+                
+                document.getElementById('cancel-stats-btn').classList.remove('hidden');
+                
+                // Scroll to form
+                document.getElementById('stats-form').scrollIntoView({ behavior: 'smooth' });
+                
+            } catch (error) {
+                console.error('Error loading social stat for editing:', error);
+                alert('Error loading social stat: ' + error.message);
+            }
+        }
+
+        function cancelStatsEdit() {
+            editingStatsId = null;
+            document.getElementById('stats-form').reset();
+            document.getElementById('stats-is-active').checked = true;
+            
+            const submitBtn = document.getElementById('stats-form').querySelector('button[type="submit"]');
+            submitBtn.textContent = 'Save Social Stat';
+            submitBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+            submitBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            
+            document.getElementById('cancel-stats-btn').classList.add('hidden');
+        }
+
+        async function deleteSocialStat(id) {
+            if (!confirm('Are you sure you want to delete this social stat?')) return;
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('social_stats')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+                
+                alert('Social stat deleted successfully!');
+                await loadSocialStats();
+                
+            } catch (error) {
+                console.error('Error deleting social stat:', error);
+                alert('Error deleting social stat: ' + error.message);
+            }
+        }
+
         // Load all data
         async function loadAllData() {
             await Promise.all([
                 loadSocialPosts(),
                 loadJournalEntries(),
                 loadIndexData(),
-                loadResumeData()
+                loadResumeData(),
+                loadSocialStats()
             ]);
         }
 
         // Form event listeners
         document.getElementById('social-form').addEventListener('submit', handleSocialPost);
+        document.getElementById('stats-form').addEventListener('submit', handleSocialStats);
         document.getElementById('journal-form').addEventListener('submit', handleJournalEntry);
         document.getElementById('index-header-form').addEventListener('submit', handleIndexHeader);
         document.getElementById('index-about-form').addEventListener('submit', handleIndexAbout);

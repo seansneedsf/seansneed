@@ -5,7 +5,7 @@
 const CONFIG = {
     // Supabase Settings
     SUPABASE_URL: 'https://oujxbqzbgdsavuavkrep.supabase.co',
-    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91anhicXpiZ2RzYXZ1YXZrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTg1NzAsImV4cCI6MjA2NjUzNDU3MH0.Sc7S82P08g6aKO', // Truncated for security
+    SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91anhicXpiZ2RzYXZ1YXZrcmVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NTg1NzAsImV4cCI6MjA2NjUzNDU3MH0.Sc7S82P08g6aKOfsuDzn9XmDoqfKyUZmoXj7p1_4MfM',
     
     // Admin Settings
     ADMIN_PASSWORD: 'seansneed2025', // Change this to your actual admin password

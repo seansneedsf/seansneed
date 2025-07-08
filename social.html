@@ -4,7 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sean Sneed - Social Feed</title>
+    
+    <!-- SEO Meta Tags -->
+    <title>Sean Sneed - Social Media Feed | Design Insights & Creative Updates</title>
+    <meta name="description" content="Follow Sean Sneed's social media presence across Bluesky, Instagram, and LinkedIn. Get insights into design thinking, creative process, and professional updates from an award-winning Creative Director.">
+    <meta name="keywords" content="Sean Sneed Social Media, Design Insights, Creative Director Updates, Professional Social Feed, Design Community, UX/UI Thoughts">
+    <meta name="author" content="Sean Sneed">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://seansneed.com/social.html">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Sean Sneed - Social Media Feed">
+    <meta property="og:description" content="Follow Sean Sneed's social media presence and get insights into design thinking and creative process from an award-winning Creative Director.">
+    <meta property="og:image" content="https://seansneed.com/images/seansneed.jpeg">
+    <meta property="og:url" content="https://seansneed.com/social.html">
+    <meta property="og:type" content="website">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Sean Sneed - Social Media Feed">
+    <meta name="twitter:description" content="Design insights and creative updates from an award-winning Creative Director.">
+    <meta name="twitter:image" content="https://seansneed.com/images/seansneed.jpeg">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100;200;300;400;500;600&amp;display=swap"
         rel="stylesheet">
@@ -355,31 +375,31 @@
                         Connecting with the design community and sharing insights across multiple platforms. Here's where you can find me most active.
                     </p>
 
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-                        <div class="text-center p-4 rounded-lg bg-[rgb(0,133,255)] border border-[rgb(0,133,255)]">
-                            <div class="text-2xl font-geist font-extralight text-white">2.1K</div>
-                            <div class="text-xs text-blue-200 font-inter">Bluesky</div>
+                    <div id="social-stats-container" class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+                        <!-- Social stats will be loaded dynamically here -->
+                        <div class="text-center p-4 rounded-lg bg-neutral-700 border border-neutral-600 animate-pulse">
+                            <div class="text-2xl font-geist font-extralight text-neutral-300">---</div>
+                            <div class="text-xs text-neutral-400 font-inter">Loading...</div>
                         </div>
-                        <div class="text-center p-4 rounded-lg bg-gradient-to-r from-orange-500 via-purple-500 to-pink-500">
-                            <div class="text-2xl font-geist font-extralight text-white">5.3K</div>
-                            <div class="text-xs text-orange-200 font-inter">Instagram</div>
+                        <div class="text-center p-4 rounded-lg bg-neutral-700 border border-neutral-600 animate-pulse">
+                            <div class="text-2xl font-geist font-extralight text-neutral-300">---</div>
+                            <div class="text-xs text-neutral-400 font-inter">Loading...</div>
                         </div>
-                        <div class="text-center p-4 rounded-lg bg-[rgb(10,102,194)] border border-[rgb(10,102,194)]">
-                            <div class="text-2xl font-geist font-extralight text-white">3.8K</div>
-                            <div class="text-xs text-blue-200 font-inter">LinkedIn</div>
+                        <div class="text-center p-4 rounded-lg bg-neutral-700 border border-neutral-600 animate-pulse">
+                            <div class="text-2xl font-geist font-extralight text-neutral-300">---</div>
+                            <div class="text-xs text-neutral-400 font-inter">Loading...</div>
                         </div>
-                        <div class="text-center p-4 rounded-lg bg-neutral-800 border border-neutral-700">
-                            <div class="text-2xl font-geist font-extralight text-neutral-200">12K</div>
-                            <div class="text-xs text-neutral-400 font-inter">Total Reach</div>
+                        <div class="text-center p-4 rounded-lg bg-neutral-700 border border-neutral-600 animate-pulse">
+                            <div class="text-2xl font-geist font-extralight text-neutral-300">---</div>
+                            <div class="text-xs text-neutral-400 font-inter">Loading...</div>
                         </div>
                     </div>
 
                     <div class="border-t border-neutral-700 pt-6">
                         <h4 class="text-xs font-medium text-neutral-500 mb-4 font-inter uppercase tracking-wider">MOST ACTIVE ON</h4>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="px-3 py-1.5 rounded-md bg-[rgb(0,133,255)] text-xs font-medium text-white font-inter">Bluesky</span>
-                            <span class="px-3 py-1.5 rounded-md bg-gradient-to-r from-orange-500 to-pink-500 text-xs font-medium text-white font-inter">Instagram</span>
-                            <span class="px-3 py-1.5 rounded-md bg-[rgb(10,102,194)] text-xs font-medium text-white font-inter">LinkedIn</span>
+                        <div id="active-platforms-container" class="flex flex-wrap gap-2">
+                            <!-- Active platforms will be loaded dynamically here -->
+                            <span class="px-3 py-1.5 rounded-md bg-neutral-700 text-xs font-medium text-neutral-300 font-inter animate-pulse">Loading...</span>
                         </div>
                     </div>
                 </section>
@@ -417,6 +437,126 @@
     <script>
         lucide.createIcons();
 
+        // Initialize Supabase with centralized configuration
+        const supabaseClient = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+
+        // Social Stats Manager
+        class SocialStatsManager {
+            constructor() {
+                this.supabase = supabaseClient;
+                this.statsContainer = null;
+                this.platformsContainer = null;
+            }
+
+            async init() {
+                this.statsContainer = document.getElementById('social-stats-container');
+                this.platformsContainer = document.getElementById('active-platforms-container');
+                
+                if (this.statsContainer) {
+                    await this.loadSocialStats();
+                }
+            }
+
+            async loadSocialStats() {
+                try {
+                    console.log('Loading social stats from Supabase...');
+                    
+                    const { data: stats, error } = await this.supabase
+                        .from('social_stats')
+                        .select('*')
+                        .eq('is_active', true)
+                        .order('display_order', { ascending: true });
+
+                    if (error) {
+                        console.error('Supabase error:', error);
+                        throw error;
+                    }
+
+                    console.log('Loaded social stats:', stats);
+
+                    if (stats && stats.length > 0) {
+                        this.renderStats(stats);
+                        this.renderActivePlatforms(stats.filter(stat => stat.platform !== 'total'));
+                        console.log('Successfully rendered social stats');
+                    } else {
+                        console.warn('No social stats found, using fallback');
+                        this.renderFallbackStats();
+                    }
+                } catch (error) {
+                    console.error('Failed to load social stats, using fallback:', error);
+                    this.renderFallbackStats();
+                }
+            }
+
+            renderStats(stats) {
+                this.statsContainer.innerHTML = stats.map(stat => {
+                    let cssClasses = 'text-center p-4 rounded-lg';
+                    
+                    // Add background styling
+                    if (stat.platform_gradient) {
+                        cssClasses += ` ${stat.platform_gradient}`;
+                    } else if (stat.platform_color) {
+                        cssClasses += ` ${stat.platform_color}`;
+                        // Add border for solid colors
+                        if (stat.platform_color.includes('rgb')) {
+                            cssClasses += ` border border-${stat.platform_color.replace('bg-', '')}`;
+                        }
+                    }
+                    
+                    return `
+                        <div class="${cssClasses}">
+                            <div class="text-2xl font-geist font-extralight text-white">${stat.display_count}</div>
+                            <div class="text-xs ${stat.text_color} font-inter">${stat.platform_name}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            renderActivePlatforms(platforms) {
+                if (this.platformsContainer) {
+                    this.platformsContainer.innerHTML = platforms.map(platform => {
+                        const backgroundClass = platform.platform_gradient || platform.platform_color;
+                        
+                        return `
+                            <span class="px-3 py-1.5 rounded-md ${backgroundClass} text-xs font-medium text-white font-inter">
+                                ${platform.platform_name}
+                            </span>
+                        `;
+                    }).join('');
+                }
+            }
+
+            renderFallbackStats() {
+                // Fallback to original hardcoded stats if database fails
+                this.statsContainer.innerHTML = `
+                    <div class="text-center p-4 rounded-lg bg-[rgb(0,133,255)] border border-[rgb(0,133,255)]">
+                        <div class="text-2xl font-geist font-extralight text-white">2.1K</div>
+                        <div class="text-xs text-blue-200 font-inter">Bluesky</div>
+                    </div>
+                    <div class="text-center p-4 rounded-lg bg-gradient-to-r from-orange-500 via-purple-500 to-pink-500">
+                        <div class="text-2xl font-geist font-extralight text-white">5.3K</div>
+                        <div class="text-xs text-orange-200 font-inter">Instagram</div>
+                    </div>
+                    <div class="text-center p-4 rounded-lg bg-[rgb(10,102,194)] border border-[rgb(10,102,194)]">
+                        <div class="text-2xl font-geist font-extralight text-white">3.8K</div>
+                        <div class="text-xs text-blue-200 font-inter">LinkedIn</div>
+                    </div>
+                    <div class="text-center p-4 rounded-lg bg-neutral-800 border border-neutral-700">
+                        <div class="text-2xl font-geist font-extralight text-neutral-200">12K</div>
+                        <div class="text-xs text-neutral-400 font-inter">Total Reach</div>
+                    </div>
+                `;
+
+                if (this.platformsContainer) {
+                    this.platformsContainer.innerHTML = `
+                        <span class="px-3 py-1.5 rounded-md bg-[rgb(0,133,255)] text-xs font-medium text-white font-inter">Bluesky</span>
+                        <span class="px-3 py-1.5 rounded-md bg-gradient-to-r from-orange-500 to-pink-500 text-xs font-medium text-white font-inter">Instagram</span>
+                        <span class="px-3 py-1.5 rounded-md bg-[rgb(10,102,194)] text-xs font-medium text-white font-inter">LinkedIn</span>
+                    `;
+                }
+            }
+        }
+
         // Initialize animations on load
         window.addEventListener('load', () => {
             const elements = document.querySelectorAll('.initial-hidden');
@@ -429,8 +569,13 @@
         const socialManager = new SocialPostsManagerSupabase();
         socialManager.init();
         
-        // Make it globally available for button interactions
+        // Initialize Social Stats Manager
+        const statsManager = new SocialStatsManager();
+        statsManager.init();
+        
+        // Make managers globally available for debugging
         window.socialManager = socialManager;
+        window.statsManager = statsManager;
     </script>
 
 </body>
