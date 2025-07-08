@@ -2125,13 +2125,16 @@
 
                 if (editingStatsId) {
                     // Update existing stat
-                    const { error } = await supabaseClient
+                    const { data, error } = await supabaseClient
                         .from('social_stats')
                         .update(statsData)
-                        .eq('id', editingStatsId);
+                        .eq('id', editingStatsId)
+                        .select();
 
                     if (error) throw error;
-                    alert('Social stat updated successfully!');
+                    
+                    console.log('Updated social stat:', data);
+                    alert('Social stat updated successfully! Changes should appear on your website within a few moments.');
                     cancelStatsEdit();
                 } else {
                     // Create new stat

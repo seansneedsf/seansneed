@@ -361,14 +361,28 @@
                 <!-- Social Stats Card -->
                 <section
                     class="animate-fade-in-up animate-delay-500 relative rounded-md overflow-hidden bg-neutral-900 border border-neutral-700 shadow-lg shadow-black/50 p-6 sm:p-8 transition-all duration-300">
-                    <div class="flex items-center gap-3 mb-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            data-lucide="trending-up" class="lucide lucide-trending-up w-5 h-5 text-neutral-300">
-                            <polyline points="22,7 13.5,15.5 8.5,10.5 2,17"></polyline>
-                            <polyline points="16,7 22,7 22,13"></polyline>
-                        </svg>
-                        <h3 class="text-xl font-geist font-extralight tracking-tight text-neutral-100">Social Reach</h3>
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                data-lucide="trending-up" class="lucide lucide-trending-up w-5 h-5 text-neutral-300">
+                                <polyline points="22,7 13.5,15.5 8.5,10.5 2,17"></polyline>
+                                <polyline points="16,7 22,7 22,13"></polyline>
+                            </svg>
+                            <h3 class="text-xl font-geist font-extralight tracking-tight text-neutral-100">Social Reach</h3>
+                        </div>
+                        <button onclick="window.statsManager.forceRefreshStats()" 
+                                class="text-xs text-neutral-400 hover:text-neutral-200 transition-colors flex items-center gap-1"
+                                title="Refresh stats">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                                <path d="M21 3v5h-5"/>
+                                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                                <path d="M3 21v-5h5"/>
+                            </svg>
+                            Refresh
+                        </button>
                     </div>
 
                     <p class="text-neutral-300 leading-relaxed text-sm font-inter mb-8">
@@ -457,15 +471,23 @@
                 }
             }
 
-            async loadSocialStats() {
+            async loadSocialStats(forceRefresh = false) {
                 try {
-                    console.log('Loading social stats from Supabase...');
+                    console.log('Loading social stats from Supabase...', forceRefresh ? '(forced refresh)' : '');
                     
-                    const { data: stats, error } = await this.supabase
+                    // Add cache busting for force refresh
+                    const query = this.supabase
                         .from('social_stats')
                         .select('*')
                         .eq('is_active', true)
                         .order('display_order', { ascending: true });
+                    
+                    // Add a timestamp to break cache if force refresh
+                    if (forceRefresh) {
+                        query.gte('created_at', '2020-01-01'); // Always true condition to break cache
+                    }
+                    
+                    const { data: stats, error } = await query;
 
                     if (error) {
                         console.error('Supabase error:', error);
@@ -478,6 +500,17 @@
                         this.renderStats(stats);
                         this.renderActivePlatforms(stats.filter(stat => stat.platform !== 'total'));
                         console.log('Successfully rendered social stats');
+                        
+                        // Store stats with timestamp for debugging
+                        window.lastStatsUpdate = {
+                            timestamp: new Date().toISOString(),
+                            stats: stats
+                        };
+                        
+                        // Show success message for manual refreshes
+                        if (forceRefresh) {
+                            this.showUpdateNotification();
+                        }
                     } else {
                         console.warn('No social stats found, using fallback');
                         this.renderFallbackStats();
@@ -486,6 +519,70 @@
                     console.error('Failed to load social stats, using fallback:', error);
                     this.renderFallbackStats();
                 }
+            }
+
+            // Add method to force refresh stats
+            async forceRefreshStats() {
+                console.log('Force refreshing social stats...');
+                this.showRefreshIndicator();
+                await this.loadSocialStats(true);
+                this.hideRefreshIndicator();
+            }
+
+            showRefreshIndicator() {
+                const refreshBtn = document.querySelector('button[onclick*="forceRefreshStats"]');
+                if (refreshBtn) {
+                    refreshBtn.innerHTML = `
+                        <svg class="animate-spin" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                            <path d="M21 3v5h-5"/>
+                            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                            <path d="M3 21v-5h5"/>
+                        </svg>
+                        Updating...
+                    `;
+                    refreshBtn.disabled = true;
+                }
+            }
+
+            hideRefreshIndicator() {
+                const refreshBtn = document.querySelector('button[onclick*="forceRefreshStats"]');
+                if (refreshBtn) {
+                    refreshBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                            <path d="M21 3v5h-5"/>
+                            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                            <path d="M3 21v-5h5"/>
+                        </svg>
+                        Refresh
+                    `;
+                    refreshBtn.disabled = false;
+                }
+            }
+
+            showUpdateNotification() {
+                // Create a temporary notification
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 text-sm flex items-center gap-2';
+                notification.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    Social stats updated!
+                `;
+                
+                document.body.appendChild(notification);
+                
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 3000);
             }
 
             renderStats(stats) {
@@ -573,9 +670,23 @@
         const statsManager = new SocialStatsManager();
         statsManager.init();
         
+        // Auto-refresh stats every 2 minutes
+        setInterval(() => {
+            console.log('Auto-refreshing social stats...');
+            statsManager.forceRefreshStats();
+        }, 120000); // 2 minutes
+        
         // Make managers globally available for debugging
         window.socialManager = socialManager;
         window.statsManager = statsManager;
+        
+        // Add debugging helper functions
+        window.debugStats = () => {
+            console.log('=== Social Stats Debug Info ===');
+            console.log('Last stats update:', window.lastStatsUpdate);
+            console.log('Current stats manager:', window.statsManager);
+            console.log('Force refresh now:', window.statsManager.forceRefreshStats());
+        };
     </script>
 
 </body>
